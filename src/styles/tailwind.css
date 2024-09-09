@@ -5,10 +5,6 @@
   @apply border border-gray-200 px-5 py-3 font-freesentation font-light focus:outline-none focus:border-gray-500 transition-colors;
 }
 
-.btn {
-  @apply text-white py-3 w-full text-lg bg-lime-700 hover:opacity-90 transition-opacity;
-}
-
 @font-face {
   font-family: "freesentation";
   font-weight: 300;

@@ -6,7 +6,8 @@ module.exports = {
     content: [],
     extend: {
       colors: {
-        ...colors,
+        neutral: colors.neutral,
+        lime: colors.lime,
       },
     },
     fontFamily: {
