@@ -1,4 +1,4 @@
-import { Form, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import FormError from "../components/form-error";
 import { gql, useMutation } from "@apollo/client";
 import {
@@ -30,13 +30,13 @@ const Login = () => {
   } = useForm<ILoginForm>();
   const onCompleted = (data: loginMutation) => {
     const {
-      login: { ok, error, token },
+      login: { ok, token },
     } = data;
     if (ok) {
       console.log(token);
     }
   };
-  const [loginMutation, { data: loginMutationResult }] = useMutation<
+  const [loginMutation, { data: loginMutationResult, loading }] = useMutation<
     loginMutation,
     loginMutationVariables
   >(LOGIN_MUTATION, {
@@ -49,7 +49,9 @@ const Login = () => {
     onCompleted,
   });
   const onSubmit = () => {
-    loginMutation();
+    if (!loading) {
+      loginMutation();
+    }
   };
   return (
     <div className="h-screen flex items-center justify-center bg-gray-800">
@@ -82,7 +84,9 @@ const Login = () => {
             <FormError errorMessage={errors.password.message!} />
           )}
 
-          <button className="btn w-full mt-3">Log In</button>
+          <button className="btn w-full mt-3">
+            {loading ? "Loading.." : "Log In"}
+          </button>
           {loginMutationResult?.login.error && (
             <FormError errorMessage={loginMutationResult.login.error} />
           )}
