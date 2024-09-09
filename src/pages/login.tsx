@@ -5,6 +5,7 @@ import {
   loginMutation,
   loginMutationVariables,
 } from "../__generated__/loginMutation";
+import nuberLogo from "../logo.svg";
 
 const LOGIN_MUTATION = gql`
   mutation loginMutation($loginInput: LoginInput!) {
@@ -54,12 +55,15 @@ const Login = () => {
     }
   };
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-800">
-      <div className="bg-white w-full max-w-md pt-8 pb-7 rounded-2xl text-center">
-        <h3 className="text-3xl text-gray-800">Log In</h3>
+    <div className="flex items-center flex-col mt-10 lg:mt-24">
+      <div className="w-full max-w-screen-sm flex flex-col items-center px-5">
+        <img src={nuberLogo} className="w-52 mb-10" alt="logo" />
+        <h4 className="w-full font-medium font-freesentation text-3xl text-gray-800 mb-5">
+          Welcome back
+        </h4>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="grid gap-2 px-5 mt-7"
+          className="grid gap-2 mt-7 w-full"
         >
           <input
             {...register("email", { required: "이메일은 필수입니다." })}
@@ -84,7 +88,7 @@ const Login = () => {
             <FormError errorMessage={errors.password.message!} />
           )}
 
-          <button className="btn w-full mt-3">
+          <button className="btn mt-3">
             {loading ? "Loading.." : "Log In"}
           </button>
           {loginMutationResult?.login.error && (

@@ -2,11 +2,48 @@
 @tailwind components;
 
 .input {
-  @apply outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-90 bg-gray-100 py-3 px-2 rounded-lg shadow-inner;
+  @apply border border-gray-200 px-5 py-3 font-freesentation font-light focus:outline-none focus:border-gray-500 transition-colors;
 }
 
 .btn {
-  @apply py-3 px-5 bg-green-900 text-white rounded-lg outline-none hover:opacity-95 transition-colors;
+  @apply text-white py-3 w-full text-lg bg-lime-700 hover:opacity-90 transition-opacity;
+}
+
+@font-face {
+  font-family: "freesentation";
+  font-weight: 300;
+  font-style: normal;
+  src: url("../fonts/Freesentation-3Light.ttf") format("truetype");
+}
+@font-face {
+  font-family: "freesentation";
+  font-weight: 400;
+  font-style: normal;
+  src: url("../fonts/Freesentation-4Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "freesentation";
+  font-weight: 500;
+  font-style: normal;
+  src: url("../fonts/Freesentation-5Medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "freesentation";
+  font-weight: 600;
+  font-style: normal;
+  src: url("../fonts/Freesentation-6SemiBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "freesentation";
+  font-weight: 700;
+  font-style: normal;
+  src: url("../fonts/Freesentation-7Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "freesentation";
+  font-weight: 800;
+  font-style: normal;
+  src: url("../fonts/Freesentation-8ExtraBold.ttf") format("truetype");
 }
 
 @tailwind utilities;
