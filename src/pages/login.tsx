@@ -8,6 +8,7 @@ import {
 import nuberLogo from "../logo.svg";
 import Button from "../components/button";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 const LOGIN_MUTATION = gql`
   mutation loginMutation($loginInput: LoginInput!) {
@@ -58,6 +59,9 @@ const Login = () => {
   };
   return (
     <div className="flex items-center flex-col mt-10 lg:mt-24">
+      <Helmet>
+        <title>Login | Nuber Eats</title>
+      </Helmet>
       <div className="w-full max-w-screen-sm flex flex-col items-center px-5">
         <img src={nuberLogo} className="w-52 mb-12" alt="logo" />
         <h4 className="w-full font-medium font-freesentation text-3xl text-gray-800 mb-3">
