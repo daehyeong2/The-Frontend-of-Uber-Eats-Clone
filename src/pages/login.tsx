@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { Form, useForm } from "react-hook-form";
 import FormError from "../components/form-error";
 import { gql, useMutation } from "@apollo/client";
 import {
@@ -7,8 +7,8 @@ import {
 } from "../__generated__/loginMutation";
 
 const LOGIN_MUTATION = gql`
-  mutation loginMutation($email: String!, $password: String!) {
-    login(input: { email: $email, password: $password }) {
+  mutation loginMutation($loginInput: LoginInput!) {
+    login(input: $loginInput) {
       ok
       error
       token
@@ -25,23 +25,32 @@ const Login = () => {
   const {
     register,
     handleSubmit,
-    getValues,
+    watch,
     formState: { errors },
   } = useForm<ILoginForm>();
-  const [loginMutation, { data, loading, error }] = useMutation<
+  const onCompleted = (data: loginMutation) => {
+    const {
+      login: { ok, error, token },
+    } = data;
+    if (ok) {
+      console.log(token);
+    }
+  };
+  const [loginMutation, { data: loginMutationResult }] = useMutation<
     loginMutation,
     loginMutationVariables
-  >(LOGIN_MUTATION);
-  const onSubmit = () => {
-    const { email, password } = getValues();
-    loginMutation({
-      variables: {
-        email,
-        password,
+  >(LOGIN_MUTATION, {
+    variables: {
+      loginInput: {
+        email: watch("email"),
+        password: watch("password"),
       },
-    });
+    },
+    onCompleted,
+  });
+  const onSubmit = () => {
+    loginMutation();
   };
-  console.log(data?.login);
   return (
     <div className="h-screen flex items-center justify-center bg-gray-800">
       <div className="bg-white w-full max-w-md pt-8 pb-7 rounded-2xl text-center">
@@ -74,6 +83,9 @@ const Login = () => {
           )}
 
           <button className="btn w-full mt-3">Log In</button>
+          {loginMutationResult?.login.error && (
+            <FormError errorMessage={loginMutationResult.login.error} />
+          )}
         </form>
       </div>
     </div>
