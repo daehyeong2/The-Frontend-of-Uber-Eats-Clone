@@ -1,9 +1,13 @@
 import { useForm } from "react-hook-form";
 import FormError from "../components/form-error";
 import { gql, useMutation } from "@apollo/client";
+import {
+  loginMutation,
+  loginMutationVariables,
+} from "../__generated__/loginMutation";
 
 const LOGIN_MUTATION = gql`
-  mutation LoginMutation($email: String!, $password: String!) {
+  mutation loginMutation($email: String!, $password: String!) {
     login(input: { email: $email, password: $password }) {
       ok
       error
@@ -24,7 +28,10 @@ const Login = () => {
     getValues,
     formState: { errors },
   } = useForm<ILoginForm>();
-  const [loginMutation, { data, loading, error }] = useMutation(LOGIN_MUTATION);
+  const [loginMutation, { data, loading, error }] = useMutation<
+    loginMutation,
+    loginMutationVariables
+  >(LOGIN_MUTATION);
   const onSubmit = () => {
     const { email, password } = getValues();
     loginMutation({
@@ -34,6 +41,7 @@ const Login = () => {
       },
     });
   };
+  console.log(data?.login);
   return (
     <div className="h-screen flex items-center justify-center bg-gray-800">
       <div className="bg-white w-full max-w-md pt-8 pb-7 rounded-2xl text-center">
