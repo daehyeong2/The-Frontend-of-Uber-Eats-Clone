@@ -3,6 +3,8 @@ import {
   restaurantsPageQuery,
   restaurantsPageQueryVariables,
 } from "../../__generated__/restaurantsPageQuery";
+import Categories from "../../components/categories";
+import RestaurantSection from "../../components/restaurantSection";
 
 const RESTAURANTS_QUERY = gql`
   query restaurantsPageQuery($input: RestaurantsInput!) {
@@ -61,25 +63,9 @@ const Restaurants = () => {
         />
       </form>
       {!loading && (
-        <div className="max-w-screen-2xl mt-5">
-          <div className="flex justify-around max-w-sm mx-auto">
-            {data?.allCategories.categories?.map((category, idx) => (
-              <div
-                className="flex flex-col gap-1 items-center cursor-pointer"
-                key={idx}
-              >
-                <div
-                  className="rounded-full size-14 flex flex-col justify-center items-center bg-contain hover:bg-gray-100"
-                  style={{
-                    backgroundImage: `url("${category.icon}")`,
-                  }}
-                />
-                <span className="text-sm font-semibold font-freesentation">
-                  {category.name}
-                </span>
-              </div>
-            ))}
-          </div>
+        <div className="max-w-screen-2xl mt-7 px-8 mx-auto">
+          <Categories data={data} />
+          <RestaurantSection data={data} />
         </div>
       )}
     </div>
