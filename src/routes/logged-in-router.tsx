@@ -1,8 +1,20 @@
 import { gql, useQuery } from "@apollo/client";
-import { isLoggedInVar } from "../apollo";
-import { LOCALSTORAGE_TOKEN } from "../constants";
 import nuberLogo from "../logo.svg";
 import { meQuery } from "../__generated__/meQuery";
+import {
+  Redirect,
+  Route,
+  BrowserRouter as Router,
+  Switch,
+} from "react-router-dom";
+import Restaurants from "../pages/client/restaurants";
+import Header from "../components/header";
+
+const ClientRoutes = [
+  <Route path="/" exact>
+    <Restaurants />
+  </Route>,
+];
 
 const ME_QUERY = gql`
   query meQuery {
@@ -18,10 +30,6 @@ const ME_QUERY = gql`
 export const LoggedInRouter = () => {
   const { data, loading, error } = useQuery<meQuery>(ME_QUERY);
   console.log(data, error);
-  const onClick = () => {
-    localStorage.removeItem(LOCALSTORAGE_TOKEN);
-    isLoggedInVar(false);
-  };
   if (!data || loading || error) {
     return (
       <div className="h-screen flex flex-col gap-10 justify-center items-center">
@@ -35,8 +43,12 @@ export const LoggedInRouter = () => {
     );
   }
   return (
-    <div>
-      <h1>{data.me.email}</h1>
-    </div>
+    <Router>
+      <Header />
+      <Switch>
+        {data.me.role === "Client" && ClientRoutes}
+        <Redirect to="/" />
+      </Switch>
+    </Router>
   );
 };
