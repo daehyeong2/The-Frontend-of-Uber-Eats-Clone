@@ -4,11 +4,14 @@ import {
   verifyEmailVariables,
 } from "../../__generated__/verifyEmail";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useEffect } from "react";
 import useQueryParams from "../../hooks/useQueryParams";
 import useMe from "../../hooks/useMe";
 import { useHistory } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import FormError from "../../components/form-error";
+import { cn } from "../../utils/cn";
 
 const VERIFY_EMAIL_MUTATION = gql`
   mutation verifyEmail($code: String!) {
@@ -42,34 +45,46 @@ const ConfirmEmail = () => {
       history.push("/");
     }
   };
-  const [verifyEmail] = useMutation<verifyEmail, verifyEmailVariables>(
-    VERIFY_EMAIL_MUTATION,
-    {
-      onCompleted,
-    }
-  );
+  const [verifyEmail, { data }] = useMutation<
+    verifyEmail,
+    verifyEmailVariables
+  >(VERIFY_EMAIL_MUTATION, {
+    onCompleted,
+  });
   const param = useQueryParams();
+  const code = param.get("code");
   useEffect(() => {
-    const code = param.get("code");
     if (!code) return;
     verifyEmail({
       variables: {
         code,
       },
     });
-  }, [param, verifyEmail]);
+  }, [code, verifyEmail]);
+  console.log(data);
+  const isErrorOccurred = data?.verifyEmail.error;
   return (
     <div className="absolute top-0 h-screen w-screen flex flex-col gap-4 justify-center items-center -z-10">
+      <Helmet>
+        <title>Verify Email | Nuber Eats</title>
+      </Helmet>
       <FontAwesomeIcon
-        icon={faMagnifyingGlass}
-        className="text-7xl mb-3.5 animate-bounce-10 text-lime-700"
+        icon={isErrorOccurred ? faXmark : faMagnifyingGlass}
+        className={cn(
+          "text-7xl mb-3.5 animate-bounce-10",
+          isErrorOccurred ? "text-red-500" : "text-lime-700"
+        )}
       />
       <h2 className="text-4xl font-freesentation font-semibold">
-        Verifying Email..
+        {isErrorOccurred ? "Couldn't Verify The Email" : "Verifying Email.."}
       </h2>
-      <h4 className="font-freesentation tracking-wider">
-        Please wait, don't close this page.
-      </h4>
+      {isErrorOccurred ? (
+        <FormError errorMessage={data.verifyEmail.error as string} />
+      ) : (
+        <h4 className="font-freesentation tracking-wider">
+          Please wait, don't close this page.
+        </h4>
+      )}
     </div>
   );
 };
