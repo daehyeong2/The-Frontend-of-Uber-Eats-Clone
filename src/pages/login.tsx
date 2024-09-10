@@ -9,6 +9,7 @@ import nuberLogo from "../logo.svg";
 import Button from "../components/button";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { isLoggedInVar } from "../apollo";
 
 const LOGIN_MUTATION = gql`
   mutation loginMutation($loginInput: LoginInput!) {
@@ -29,7 +30,7 @@ const Login = () => {
   const {
     register,
     handleSubmit,
-    watch,
+    getValues,
     formState: { errors, isValid },
   } = useForm<ILoginForm>();
   const onCompleted = (data: loginMutation) => {
@@ -38,23 +39,26 @@ const Login = () => {
     } = data;
     if (ok) {
       console.log(token);
+      isLoggedInVar(true);
     }
   };
   const [loginMutation, { data: loginMutationResult, loading }] = useMutation<
     loginMutation,
     loginMutationVariables
   >(LOGIN_MUTATION, {
-    variables: {
-      loginInput: {
-        email: watch("email"),
-        password: watch("password"),
-      },
-    },
     onCompleted,
   });
   const onSubmit = () => {
+    const { email, password } = getValues();
     if (!loading) {
-      loginMutation();
+      loginMutation({
+        variables: {
+          loginInput: {
+            email,
+            password,
+          },
+        },
+      });
     }
   };
   return (
@@ -72,7 +76,14 @@ const Login = () => {
           className="grid gap-2 mt-7 mb-5 w-full"
         >
           <input
-            {...register("email", { required: "이메일은 필수입니다." })}
+            {...register("email", {
+              required: "이메일은 필수입니다.",
+              pattern: {
+                value:
+                  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                message: "올바른 이메일을 입력해 주세요.",
+              },
+            })}
             name="email"
             type="email"
             placeholder="Email"

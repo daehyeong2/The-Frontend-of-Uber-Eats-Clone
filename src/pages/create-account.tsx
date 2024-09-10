@@ -3,9 +3,13 @@ import FormError from "../components/form-error";
 import { gql, useMutation } from "@apollo/client";
 import nuberLogo from "../logo.svg";
 import Button from "../components/button";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { CreateAccountInput, UserRole } from "../__generated__/globalTypes";
+import {
+  createAccountMutation,
+  createAccountMutationVariables,
+} from "../__generated__/createAccountMutation";
 
 const CREATE_ACCOUNT_MUTATION = gql`
   mutation createAccountMutation($createAccountInput: CreateAccountInput!) {
@@ -20,18 +24,46 @@ const Login = () => {
   const {
     register,
     handleSubmit,
-    watch,
+    getValues,
     formState: { errors, isValid },
   } = useForm<CreateAccountInput>({
     defaultValues: {
       role: UserRole.Client,
     },
   });
-  const [createAccountMutation, { loading }] = useMutation(
-    CREATE_ACCOUNT_MUTATION
+  const history = useHistory();
+  const onCompleted = (data: createAccountMutation) => {
+    const {
+      createAccount: { ok },
+    } = data;
+    if (ok) {
+      alert("회원가입에 성공했습니다! 로그인 페이지로 이동합니다.");
+      history.push("/");
+    }
+  };
+  const [
+    createAccountMutation,
+    { loading, data: createAccountMutationResult },
+  ] = useMutation<createAccountMutation, createAccountMutationVariables>(
+    CREATE_ACCOUNT_MUTATION,
+    {
+      onCompleted,
+    }
   );
-  const onSubmit = () => {};
-  console.log(watch());
+  const onSubmit = () => {
+    const { email, password, role } = getValues();
+    if (!loading) {
+      createAccountMutation({
+        variables: {
+          createAccountInput: {
+            email,
+            password,
+            role,
+          },
+        },
+      });
+    }
+  };
   return (
     <div className="flex items-center flex-col mt-10 lg:mt-24">
       <Helmet>
@@ -47,7 +79,14 @@ const Login = () => {
           className="grid gap-2 mt-7 mb-5 w-full"
         >
           <input
-            {...register("email", { required: "이메일은 필수입니다." })}
+            {...register("email", {
+              required: "이메일은 필수입니다.",
+              pattern: {
+                value:
+                  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                message: "올바른 이메일을 입력해 주세요.",
+              },
+            })}
             name="email"
             type="email"
             placeholder="Email"
@@ -83,6 +122,11 @@ const Login = () => {
             loading={loading}
             text="Create Account"
           />
+          {createAccountMutationResult?.createAccount.error && (
+            <FormError
+              errorMessage={createAccountMutationResult.createAccount.error}
+            />
+          )}
         </form>
         <div>
           Already have an account?{" "}
