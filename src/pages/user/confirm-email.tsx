@@ -6,6 +6,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { useEffect } from "react";
+import useQueryParams from "../../hooks/useQueryParams";
 
 const VERIFY_EMAIL_MUTATION = gql`
   mutation verifyEmail($code: String!) {
@@ -21,8 +22,10 @@ const ConfirmEmail = () => {
     verifyEmail,
     verifyEmailVariables
   >(VERIFY_EMAIL_MUTATION);
+  const param = useQueryParams();
   useEffect(() => {
-    const code = window.location.href.split("?code=")[1];
+    const code = param.get("code");
+    if (!code) return;
     verifyEmail({
       variables: {
         code,
