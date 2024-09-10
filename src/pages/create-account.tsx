@@ -4,7 +4,7 @@ import { gql, useMutation } from "@apollo/client";
 import nuberLogo from "../logo.svg";
 import Button from "../components/button";
 import { Link, useHistory } from "react-router-dom";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { CreateAccountInput, UserRole } from "../__generated__/globalTypes";
 import {
   createAccountMutation,
