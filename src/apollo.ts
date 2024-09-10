@@ -10,6 +10,7 @@ import { LOCALSTORAGE_TOKEN } from "./constants";
 const token = localStorage.getItem(LOCALSTORAGE_TOKEN);
 export const isLoggedInVar = makeVar(Boolean(token));
 export const authToken = makeVar(token);
+export const closeVerifyWarning = makeVar(false);
 
 const httpLink = createHttpLink({
   uri: "http://localhost:4000/graphql",
@@ -38,6 +39,11 @@ export const client = new ApolloClient({
           token: {
             read() {
               return authToken();
+            },
+          },
+          closeVerifyWarning: {
+            read() {
+              return closeVerifyWarning();
             },
           },
         },

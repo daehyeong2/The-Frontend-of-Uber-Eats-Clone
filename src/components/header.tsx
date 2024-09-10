@@ -3,17 +3,26 @@ import useMe from "../hooks/useMe";
 import Logo from "./Logo";
 import { faEnvelope, faUser } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import { closeVerifyWarning } from "../apollo";
+import { useState } from "react";
 
 const Header = () => {
   const { data } = useMe();
+  const [closeWarning, setCloseWarning] = useState(closeVerifyWarning());
+  const onClose = () => {
+    closeVerifyWarning(true);
+    setCloseWarning(true);
+  };
   return (
     <>
-      {!data?.me.verified && (
+      {!data?.me.verified && !closeWarning && (
         <div className="bg-amber-100 py-2 border-2 border-amber-300 border-opacity-45">
           <span className="font-freesentation tracking-wide font-medium flex items-center justify-center">
             <FontAwesomeIcon icon={faEnvelope} className="mr-2.5 text-lg" />
             Please verify your email.{" "}
-            <p className="ml-2 font-light cursor-pointer">[Click to Close]</p>
+            <p className="ml-2 font-light cursor-pointer" onClick={onClose}>
+              [Click to Close]
+            </p>
           </span>
         </div>
       )}
@@ -23,7 +32,7 @@ const Header = () => {
             <Logo className="w-38" alt="logo" />
           </Link>
           <span>
-            <Link to="/my-profile">
+            <Link to="/edit-profile">
               <FontAwesomeIcon icon={faUser} className="text-xl" />
             </Link>
           </span>

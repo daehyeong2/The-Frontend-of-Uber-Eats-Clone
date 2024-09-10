@@ -5,9 +5,10 @@ import Header from "../components/header";
 import useMe from "../hooks/useMe";
 import NotFound from "../pages/404";
 import ConfirmEmail from "../pages/user/confirm-email";
+import EditProfile from "../pages/user/edit-profile";
 
 const ClientRoutes = [
-  <Route path="/" exact key="restaurants">
+  <Route path="/" exact key={1}>
     <Restaurants />
   </Route>,
 ];
@@ -30,10 +31,13 @@ export const LoggedInRouter = () => {
     <Router>
       <Header />
       <Switch>
-        {data.me.role === "Client" && ClientRoutes}
         <Route path="/confirm">
           <ConfirmEmail />
         </Route>
+        <Route path="/edit-profile">
+          <EditProfile />
+        </Route>
+        {data.me.role === "Client" && ClientRoutes}
         <Route>
           <NotFound />
         </Route>

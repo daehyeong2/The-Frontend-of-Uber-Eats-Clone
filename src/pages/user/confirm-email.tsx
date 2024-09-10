@@ -8,6 +8,7 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { useEffect } from "react";
 import useQueryParams from "../../hooks/useQueryParams";
 import useMe from "../../hooks/useMe";
+import { useHistory } from "react-router-dom";
 
 const VERIFY_EMAIL_MUTATION = gql`
   mutation verifyEmail($code: String!) {
@@ -21,6 +22,7 @@ const VERIFY_EMAIL_MUTATION = gql`
 const ConfirmEmail = () => {
   const { data: userData } = useMe();
   const client = useApolloClient();
+  const history = useHistory();
   const onCompleted = (data: verifyEmail) => {
     const {
       verifyEmail: { ok },
@@ -37,6 +39,7 @@ const ConfirmEmail = () => {
           verified: true,
         },
       });
+      history.push("/");
     }
   };
   const [verifyEmail] = useMutation<verifyEmail, verifyEmailVariables>(
