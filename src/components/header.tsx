@@ -20,7 +20,10 @@ const Header = () => {
           <span className="font-freesentation tracking-wide font-medium flex items-center justify-center">
             <FontAwesomeIcon icon={faEnvelope} className="mr-2.5 text-lg" />
             Please verify your email.{" "}
-            <p className="ml-2 font-light cursor-pointer" onClick={onClose}>
+            <p
+              className="ml-2 font-light cursor-pointer hover:text-lime-700"
+              onClick={onClose}
+            >
               [Click to Close]
             </p>
           </span>

@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import useMe from "../../hooks/useMe";
 import Button from "../../components/button";
 import { Helmet } from "react-helmet-async";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useApolloClient, useMutation } from "@apollo/client";
 import {
   editProfile,
   editProfileVariables,
@@ -24,16 +24,35 @@ interface IFormProps {
 }
 
 const EditProfile = () => {
+  const client = useApolloClient();
   const { data: userData } = useMe();
   const onCompleted = (data: editProfile) => {
     const {
       editProfile: { ok },
     } = data;
-    if (ok) {
-      // update the cache
+    if (ok && userData) {
+      const {
+        me: { email: prevEmail, id },
+      } = userData;
+      const { email: newEmail } = getValues();
+      if (prevEmail !== newEmail) {
+        client.writeFragment({
+          id: `User:${id}`,
+          fragment: gql`
+            fragment EditedUser on User {
+              email
+              verified
+            }
+          `,
+          data: {
+            email: newEmail,
+            verified: false,
+          },
+        });
+      }
     }
   };
-  const [editProfile, { loading }] = useMutation<
+  const [editProfile, { data, loading }] = useMutation<
     editProfile,
     editProfileVariables
   >(EDIT_PROFILE_MUTATION, {
@@ -94,6 +113,9 @@ const EditProfile = () => {
           canClick={formState.isValid}
           loading={loading}
         />
+        {data?.editProfile.error && (
+          <FormError errorMessage={data.editProfile.error} />
+        )}
       </form>
     </div>
   );
