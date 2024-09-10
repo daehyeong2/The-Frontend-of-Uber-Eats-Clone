@@ -4,9 +4,10 @@ import Restaurants from "../pages/client/restaurants";
 import Header from "../components/header";
 import useMe from "../hooks/useMe";
 import NotFound from "../pages/404";
+import ConfirmEmail from "../pages/user/confirm-email";
 
 const ClientRoutes = [
-  <Route path="/" exact>
+  <Route path="/" exact key="restaurants">
     <Restaurants />
   </Route>,
 ];
@@ -17,7 +18,7 @@ export const LoggedInRouter = () => {
     return (
       <div className="h-screen flex flex-col gap-10 justify-center items-center">
         <img src={nuberLogo} className="w-52" alt="logo" />
-        <ul className="flex gap-4 *:size-2.5 *:bg-black *:rounded-full *:animate-bounce-big">
+        <ul className="flex gap-4 *:size-2.5 *:bg-black *:rounded-full *:animate-bounce-10">
           <li />
           <li className="animation-delay-100" />
           <li className="animation-delay-200" />
@@ -30,6 +31,9 @@ export const LoggedInRouter = () => {
       <Header />
       <Switch>
         {data.me.role === "Client" && ClientRoutes}
+        <Route path="/confirm">
+          <ConfirmEmail />
+        </Route>
         <Route>
           <NotFound />
         </Route>

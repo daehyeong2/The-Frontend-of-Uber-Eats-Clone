@@ -10,10 +10,10 @@ module.exports = {
         lime: colors.lime,
       },
       animation: {
-        "bounce-big": "bounce-big 750ms ease-in-out infinite",
+        "bounce-10": "bounce-big 750ms ease-in-out infinite",
       },
       keyframes: {
-        "bounce-big": {
+        "bounce-10": {
           "0%": { transform: "none" },
           "50%": { transform: "translateY(-10px)" },
           "100%": { transform: "none" },
