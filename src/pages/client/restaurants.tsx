@@ -5,6 +5,9 @@ import {
 } from "../../__generated__/restaurantsPageQuery";
 import Categories from "../../components/categories";
 import RestaurantSection from "../../components/restaurantSection";
+import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 const RESTAURANTS_QUERY = gql`
   query restaurantsPageQuery($input: RestaurantsInput!) {
@@ -39,16 +42,19 @@ const RESTAURANTS_QUERY = gql`
 `;
 
 const Restaurants = () => {
+  const [page, setPage] = useState(1);
   const { data, loading } = useQuery<
     restaurantsPageQuery,
     restaurantsPageQueryVariables
   >(RESTAURANTS_QUERY, {
     variables: {
       input: {
-        page: 1,
+        page,
       },
     },
   });
+  const onNextPageClick = () => setPage((current) => current + 1);
+  const onPrevPageClick = () => setPage((current) => current - 1);
   return (
     <div>
       <form className="bg-gray-800 w-full py-32 flex justify-center items-center relative overflow-hidden">
@@ -63,9 +69,34 @@ const Restaurants = () => {
         />
       </form>
       {!loading && (
-        <div className="max-w-screen-2xl mt-7 px-8 mx-auto">
+        <div className="max-w-screen-2xl mt-7 px-8 mx-auto pb-20">
           <Categories data={data} />
           <RestaurantSection data={data} />
+          <div className="grid grid-cols-3 place-items-center mt-10 max-w-sm mx-auto">
+            {page > 1 ? (
+              <button
+                onClick={onPrevPageClick}
+                className="text-xl bg-gray-50 border border-gray-200 rounded-md px-5 py-1"
+              >
+                <FontAwesomeIcon icon={faArrowLeft} />
+              </button>
+            ) : (
+              <div />
+            )}
+            <span>
+              Page {page} of {data?.allRestaurants.totalPages}
+            </span>
+            {page < (data?.allRestaurants.totalPages ?? 0) ? (
+              <button
+                onClick={onNextPageClick}
+                className="text-xl bg-gray-50 border border-gray-200 rounded-md px-5 py-1"
+              >
+                <FontAwesomeIcon icon={faArrowRight} />
+              </button>
+            ) : (
+              <div />
+            )}
+          </div>
         </div>
       )}
     </div>
