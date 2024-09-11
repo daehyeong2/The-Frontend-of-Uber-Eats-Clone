@@ -8,6 +8,8 @@ import RestaurantSection from "../../components/restaurantSection";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { useForm } from "react-hook-form";
+import { useHistory } from "react-router-dom";
 
 const RESTAURANTS_QUERY = gql`
   query restaurantsPageQuery($input: RestaurantsInput!) {
@@ -41,6 +43,10 @@ const RESTAURANTS_QUERY = gql`
   }
 `;
 
+interface IFormProps {
+  searchTerm: string;
+}
+
 const Restaurants = () => {
   const [page, setPage] = useState(1);
   const { data, loading } = useQuery<
@@ -55,17 +61,32 @@ const Restaurants = () => {
   });
   const onNextPageClick = () => setPage((current) => current + 1);
   const onPrevPageClick = () => setPage((current) => current - 1);
+  const { register, handleSubmit, getValues } = useForm<IFormProps>();
+  const history = useHistory();
+  const onSearchSubmit = () => {
+    const { searchTerm } = getValues();
+    history.push({
+      pathname: "/search",
+      search: `term=${searchTerm}`,
+    });
+  };
   return (
     <div>
-      <form className="bg-gray-800 w-full py-32 flex justify-center items-center relative overflow-hidden">
+      <form
+        onSubmit={handleSubmit(onSearchSubmit)}
+        className="bg-gray-800 w-full py-32 flex justify-center items-center relative overflow-hidden"
+      >
         <img
           src="/images/vegetables.png"
           className="object-cover object-center absolute w-full brightness-[60%]"
+          alt="background-image"
         />
         <input
+          {...register("searchTerm", { required: true, minLength: 3 })}
           type="search"
           placeholder="Search restaurants.."
-          className="input rounded-lg border-none w-1/4 z-10"
+          className="input rounded-lg border-none w-3/4 md:w-1/2 xl:w-1/4 z-10"
+          minLength={3}
         />
       </form>
       {!loading && (
