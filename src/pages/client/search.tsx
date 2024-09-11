@@ -25,13 +25,13 @@ const SEARCH_RESTAURANT = gql`
 `;
 
 const Search = () => {
-  const params = useQueryParams();
+  const queryParams = useQueryParams();
   const history = useHistory();
   const [queryReadyToStart, { data, loading, called }] = useLazyQuery<
     searchRestaurant,
     searchRestaurantVariables
   >(SEARCH_RESTAURANT);
-  const query = params.get("term");
+  const query = queryParams.get("term");
   useEffect(() => {
     if (!query) {
       return history.replace("/");

@@ -1,4 +1,4 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useApolloClient, useQuery } from "@apollo/client";
 import {
   restaurantsPageQuery,
   restaurantsPageQueryVariables,
@@ -11,7 +11,7 @@ import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { RESTAURANT_FRAGMENT } from "../../fragments";
+import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 
 const RESTAURANTS_QUERY = gql`
   query restaurantsPageQuery($input: RestaurantsInput!) {
@@ -19,11 +19,7 @@ const RESTAURANTS_QUERY = gql`
       ok
       error
       categories {
-        id
-        name
-        slug
-        icon
-        restaurantCount
+        ...CategoryParts
       }
     }
     allRestaurants(input: $input) {
@@ -36,6 +32,7 @@ const RESTAURANTS_QUERY = gql`
       }
     }
   }
+  ${CATEGORY_FRAGMENT}
   ${RESTAURANT_FRAGMENT}
 `;
 
@@ -45,6 +42,7 @@ interface IFormProps {
 
 const Restaurants = () => {
   const [page, setPage] = useState(1);
+  const client = useApolloClient();
   const { data, loading } = useQuery<
     restaurantsPageQuery,
     restaurantsPageQueryVariables

@@ -7,6 +7,7 @@ import NotFound from "../pages/404";
 import ConfirmEmail from "../pages/user/confirm-email";
 import EditProfile from "../pages/user/edit-profile";
 import Search from "../pages/client/search";
+import Category from "../pages/client/category";
 
 const ClientRoutes = [
   <Route path="/" exact key={1}>
@@ -14,6 +15,9 @@ const ClientRoutes = [
   </Route>,
   <Route path="/search" key={2}>
     <Search />
+  </Route>,
+  <Route path="/category/:slug" key={3}>
+    <Category />
   </Route>,
 ];
 
