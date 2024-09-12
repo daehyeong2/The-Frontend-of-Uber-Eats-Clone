@@ -13,7 +13,7 @@ const Categories: React.FC<ICategoriesProps> = ({ data }) => {
         <Link
           className="flex flex-col gap-1 items-center cursor-pointer group"
           key={category.id}
-          to={`/category/${category.slug}`}
+          to={`/categories/${category.slug}`}
         >
           <div
             className="rounded-full size-14 flex flex-col justify-center items-center bg-contain group-hover:bg-gray-100"
