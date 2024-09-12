@@ -11,15 +11,16 @@ import { RestaurantInput } from "./globalTypes";
 
 export interface restaurant_restaurant_restaurant_category {
   __typename: "Category";
+  slug: string;
   name: string;
 }
 
 export interface restaurant_restaurant_restaurant {
   __typename: "Restaurant";
+  category: restaurant_restaurant_restaurant_category | null;
   id: number;
   name: string;
   coverImg: string;
-  category: restaurant_restaurant_restaurant_category | null;
   address: string;
   isPromoted: boolean;
 }
