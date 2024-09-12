@@ -8,7 +8,7 @@ interface ICategoriesProps {
 
 const Categories: React.FC<ICategoriesProps> = ({ data }) => {
   return (
-    <div className="flex justify-around max-w-sm mx-auto">
+    <div className="flex justify-around max-w-sm mx-auto mb-14">
       {data?.allCategories.categories?.map((category) => (
         <Link
           className="flex flex-col gap-1 items-center cursor-pointer group"

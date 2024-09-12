@@ -10,7 +10,7 @@ module.exports = {
         lime: colors.lime,
       },
       animation: {
-        "bounce-10": "bounce-big 750ms ease-in-out infinite",
+        "bounce-10": "bounce-10 750ms ease-in-out infinite",
       },
       keyframes: {
         "bounce-10": {

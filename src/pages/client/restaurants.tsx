@@ -1,4 +1,4 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import {
   restaurantsPageQuery,
   restaurantsPageQueryVariables,
@@ -12,8 +12,9 @@ import { useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
+import Loading from "../../components/loading";
 
-const RESTAURANTS_QUERY = gql`
+export const RESTAURANTS_QUERY = gql`
   query restaurantsPageQuery($input: RestaurantsInput!) {
     allCategories {
       ok
@@ -42,7 +43,6 @@ interface IFormProps {
 
 const Restaurants = () => {
   const [page, setPage] = useState(1);
-  const client = useApolloClient();
   const { data, loading } = useQuery<
     restaurantsPageQuery,
     restaurantsPageQueryVariables
@@ -75,21 +75,20 @@ const Restaurants = () => {
       >
         <img
           src="/images/vegetables.png"
-          className="object-cover object-center absolute w-full brightness-[60%]"
+          className="object-cover object-center absolute w-full brightness-[60%] pointer-events-none"
           alt="background-image"
         />
         <input
-          {...register("searchTerm", { required: true, minLength: 3 })}
+          {...register("searchTerm", { required: true })}
           type="search"
           placeholder="Search restaurants.."
           className="input rounded-lg border-none w-3/4 md:w-1/2 xl:w-1/4 z-10"
-          minLength={3}
         />
       </form>
-      {!loading && (
+      {!loading ? (
         <div className="max-w-screen-2xl mt-7 px-8 mx-auto pb-20">
           <Categories data={data} />
-          <RestaurantSection data={data} />
+          <RestaurantSection data={data?.allRestaurants.results ?? []} />
           <div className="grid grid-cols-3 place-items-center mt-10 max-w-sm mx-auto">
             {page > 1 ? (
               <button
@@ -116,6 +115,8 @@ const Restaurants = () => {
             )}
           </div>
         </div>
+      ) : (
+        <Loading marginTop={72} />
       )}
     </div>
   );
