@@ -37,7 +37,7 @@ const Search = () => {
   const [page, setPage] = useState(1);
   const queryParams = useQueryParams();
   const history = useHistory();
-  const [queryReadyToStart, { data, loading, called }] = useLazyQuery<
+  const [queryReadyToStart, { data, loading }] = useLazyQuery<
     searchRestaurant,
     searchRestaurantVariables
   >(SEARCH_RESTAURANT);
