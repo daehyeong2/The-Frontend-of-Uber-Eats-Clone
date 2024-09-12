@@ -21,7 +21,7 @@ const Button: React.FC<IButtonProps> = ({
         "text-white py-3 w-full text-lg transition-all",
         canClick
           ? "bg-lime-700 hover:opacity-90"
-          : "bg-neutral-300 hover:opacity-100 pointer-events-none",
+          : "bg-neutral-300 hover:opacity-100 cursor-default",
         className
       )}
     >

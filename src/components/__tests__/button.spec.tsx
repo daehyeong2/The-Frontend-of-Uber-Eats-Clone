@@ -19,6 +19,6 @@ describe("<Button />", () => {
       <Button canClick={false} loading={false} text="test" />
     );
     getByText("test");
-    expect(container.firstChild).toHaveClass("pointer-events-none");
+    expect(container.firstChild).toBeDisabled();
   });
 });
