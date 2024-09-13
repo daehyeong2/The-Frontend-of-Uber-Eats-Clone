@@ -33,7 +33,9 @@ const Login = () => {
     handleSubmit,
     getValues,
     formState: { errors, isValid },
-  } = useForm<ILoginForm>();
+  } = useForm<ILoginForm>({
+    mode: "onChange",
+  });
   const onCompleted = (data: loginMutation) => {
     const {
       login: { ok, token },

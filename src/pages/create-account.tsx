@@ -30,6 +30,7 @@ const Login = () => {
     defaultValues: {
       role: UserRole.Client,
     },
+    mode: "onChange",
   });
   const history = useHistory();
   const onCompleted = (data: createAccountMutation) => {
