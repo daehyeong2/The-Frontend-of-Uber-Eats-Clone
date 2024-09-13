@@ -73,7 +73,7 @@ describe("<Login />", () => {
       data: {
         login: {
           ok: true,
-          error: null,
+          error: "mutation-error",
           token: "xxxx",
         },
       },
@@ -91,6 +91,10 @@ describe("<Login />", () => {
         email: formData.email,
         password: formData.password,
       },
+    });
+    await waitFor(() => {
+      const errorMessage = getByRole("alert");
+      expect(errorMessage).toHaveTextContent(/mutation-error/i);
     });
   });
 });
