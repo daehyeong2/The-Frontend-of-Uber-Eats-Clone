@@ -20,7 +20,7 @@ const CREATE_ACCOUNT_MUTATION = gql`
   }
 `;
 
-const Login = () => {
+const CreateAccount = () => {
   const {
     register,
     handleSubmit,
@@ -140,4 +140,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default CreateAccount;
