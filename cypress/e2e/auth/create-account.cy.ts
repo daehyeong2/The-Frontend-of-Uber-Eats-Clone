@@ -16,15 +16,32 @@ describe("Create Account", () => {
     cy.findByRole("alert").should("have.text", "비밀번호는 필수입니다.");
   });
   it("should be able to create account and log in", () => {
+    cy.intercept("http://localhost:4000/graphql", (req) => {
+      const { operationName } = req.body;
+      if (operationName === "createAccountMutation") {
+        req.reply((res) => {
+          res.send({
+            data: {
+              createAccount: {
+                ok: true,
+                error: null,
+                __typename: "CreateAccountOutput",
+              },
+            },
+          });
+        });
+      }
+    });
+
     cy.visit("/create-account");
 
-    cy.findByPlaceholderText(/email/i).type("test@test.com");
+    cy.findByPlaceholderText(/email/i).type("baconbacon1231@gmail.com");
     cy.findByPlaceholderText(/password/i).type("test1234");
     cy.findByRole("button").click();
 
-    cy.visit("/");
+    cy.title().should("eq", "Login | Nuber Eats");
 
-    cy.findByPlaceholderText(/email/i).type("test@test.com");
+    cy.findByPlaceholderText(/email/i).type("baconbacon1231@gmail.com");
     cy.findByPlaceholderText(/password/i).type("test1234");
     cy.findByRole("button").click();
     cy.window().its("localStorage.nuber-token").should("be.a", "string");
