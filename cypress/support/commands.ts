@@ -42,6 +42,7 @@ declare global {
     interface Chainable {
       assertLoggedIn(): void;
       assertLoggedOut(): void;
+      assertTitle(title: string): void;
       login(email: string, password: string): void;
     }
   }
@@ -58,9 +59,13 @@ Cypress.Commands.add("assertLoggedOut", () => {
 Cypress.Commands.add("login", (email: string, password: string) => {
   cy.visit("/");
   cy.assertLoggedOut();
-  cy.title().should("eq", "Login | Nuber Eats");
+  cy.assertTitle("Login");
   cy.findByPlaceholderText(/email/i).type(email);
   cy.findByPlaceholderText(/password/i).type(password);
   cy.findByRole("button").should("not.be.disabled").click();
   cy.assertLoggedIn();
+});
+
+Cypress.Commands.add("assertTitle", (title: string) => {
+  cy.title().should("eq", `${title} | Nuber Eats`);
 });
