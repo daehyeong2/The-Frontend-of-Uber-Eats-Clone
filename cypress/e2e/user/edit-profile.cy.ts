@@ -7,6 +7,13 @@ describe("Edit Profile", () => {
     cy.assertTitle("Edit Profile");
   });
   it("can change email", () => {
+    cy.intercept("POST", "http://localhost:4000/graphql", (req) => {
+      if (req.body?.operationName === "editProfile") {
+        if (req.body?.variables?.input?.email) {
+          req.body.variables.input.email = "baconbacon1231@gmail.com";
+        }
+      }
+    });
     cy.visit("/edit-profile");
     cy.findByPlaceholderText(/.*이메일.*/)
       .clear()
