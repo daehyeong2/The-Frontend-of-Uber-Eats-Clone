@@ -86,7 +86,7 @@ const Restaurants = () => {
         />
       </form>
       {!loading ? (
-        <div className="max-w-screen-2xl mt-7 px-8 mx-auto pb-20">
+        <div className="container mt-7 px-8 pb-20">
           <Categories data={data} />
           <RestaurantSection data={data?.allRestaurants.results ?? []} />
           <div className="grid grid-cols-3 place-items-center mt-10 max-w-sm mx-auto">

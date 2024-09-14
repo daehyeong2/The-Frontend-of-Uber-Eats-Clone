@@ -120,7 +120,7 @@ const Login = () => {
         </form>
         <div>
           New to Nuber?{" "}
-          <Link className="text-lime-600 hover:underline" to="/create-account">
+          <Link className="link" to="/create-account">
             Create an Account
           </Link>
         </div>

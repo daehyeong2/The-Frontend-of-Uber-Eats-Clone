@@ -12,13 +12,15 @@ import RestaurantDetail from "../pages/client/restaurantDetail";
 import React from "react";
 import { UserRole } from "../__generated__/globalTypes";
 import MyRestaurants from "../pages/owner/my-restaurants";
+import AddRestaurant from "../pages/owner/add-restaurant";
 
-interface IRoutes {
+interface IRoute {
   path: string;
   component: React.ReactNode;
+  exact?: boolean;
 }
 
-const clientRoutes: IRoutes[] = [
+const clientRoutes: IRoute[] = [
   {
     path: "/",
     component: <Restaurants />,
@@ -41,14 +43,18 @@ const clientRoutes: IRoutes[] = [
   },
 ];
 
-const ownerRoutes: IRoutes[] = [
+const ownerRoutes: IRoute[] = [
   {
     path: "/",
     component: <MyRestaurants />,
   },
+  {
+    path: "/add-restaurant",
+    component: <AddRestaurant />,
+  },
 ];
 
-const commonRoutes = [
+const commonRoutes: IRoute[] = [
   {
     path: "/confirm",
     component: <ConfirmEmail />,
@@ -77,20 +83,20 @@ export const LoggedInRouter = () => {
     <Router>
       <Header />
       <Switch>
-        {commonRoutes.map(({ path, component }) => (
-          <Route key={path} path={path}>
+        {commonRoutes.map(({ path, component, exact = true }) => (
+          <Route key={path} path={path} exact={exact}>
             {component}
           </Route>
         ))}
         {data.me.role === UserRole.Client &&
-          clientRoutes.map(({ path, component }) => (
-            <Route key={path} path={path}>
+          clientRoutes.map(({ path, component, exact = true }) => (
+            <Route key={path} path={path} exact={exact}>
               {component}
             </Route>
           ))}
         {data.me.role === UserRole.Owner &&
-          ownerRoutes.map(({ path, component }) => (
-            <Route key={path} path={path}>
+          ownerRoutes.map(({ path, component, exact = true }) => (
+            <Route key={path} path={path} exact={exact}>
               {component}
             </Route>
           ))}

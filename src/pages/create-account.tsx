@@ -131,7 +131,7 @@ const CreateAccount = () => {
         </form>
         <div>
           Already have an account?{" "}
-          <Link className="text-lime-600 hover:underline" to="/">
+          <Link className="link" to="/">
             Sign In
           </Link>
         </div>

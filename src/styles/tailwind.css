@@ -5,6 +5,14 @@
   @apply border border-gray-200 px-5 py-3 font-freesentation font-light focus:outline-none focus:border-gray-500 transition-colors;
 }
 
+.container {
+  @apply max-w-screen-2xl mx-auto;
+}
+
+.link {
+  @apply text-lime-600 hover:underline;
+}
+
 @font-face {
   font-family: "freesentation";
   font-weight: 300;
