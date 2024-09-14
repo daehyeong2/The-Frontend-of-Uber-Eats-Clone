@@ -16,7 +16,7 @@ import {
 import { RESTAURANTS_QUERY } from "./restaurants";
 import Loading from "../../components/loading";
 
-const CATEGORY_QUERY = gql`
+export const CATEGORY_QUERY = gql`
   query category($input: CategoryInput!) {
     category(input: $input) {
       ok

@@ -9,7 +9,7 @@ import {
 } from "../../__generated__/editProfile";
 import FormError from "../../components/form-error";
 
-const EDIT_PROFILE_MUTATION = gql`
+export const EDIT_PROFILE_MUTATION = gql`
   mutation editProfile($input: EditProfileInput!) {
     editProfile(input: $input) {
       ok
@@ -59,6 +59,7 @@ const EditProfile = () => {
     onCompleted,
   });
   const { register, handleSubmit, getValues, formState } = useForm<IFormProps>({
+    mode: "onChange",
     defaultValues: {
       email: userData?.me.email,
     },
@@ -114,7 +115,7 @@ const EditProfile = () => {
           loading={loading}
         />
         {data?.editProfile.error && (
-          <FormError errorMessage={data.editProfile.error} />
+          <FormError errorMessage={data?.editProfile.error} />
         )}
       </form>
     </div>

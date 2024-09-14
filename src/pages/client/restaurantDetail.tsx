@@ -7,7 +7,7 @@ import {
 } from "../../__generated__/restaurant";
 import { Helmet } from "react-helmet-async";
 
-const RESTAURANT_QUERY = gql`
+export const RESTAURANT_QUERY = gql`
   query restaurant($input: RestaurantInput!) {
     restaurant(input: $input) {
       ok
@@ -54,6 +54,7 @@ const RestaurantDetail = () => {
             {data?.restaurant.restaurant?.name}
           </h2>
           <Link
+            role="link"
             className="text-sm font-light text-gray-500 hover:underline font-freesentation"
             to={`/categories/${data?.restaurant.restaurant?.category?.slug}`}
           >

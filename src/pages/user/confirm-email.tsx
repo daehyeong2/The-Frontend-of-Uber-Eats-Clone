@@ -13,7 +13,7 @@ import { Helmet } from "react-helmet-async";
 import FormError from "../../components/form-error";
 import { cn } from "../../utils/cn";
 
-const VERIFY_EMAIL_MUTATION = gql`
+export const VERIFY_EMAIL_MUTATION = gql`
   mutation verifyEmail($code: String!) {
     verifyEmail(code: $code) {
       ok
@@ -61,7 +61,6 @@ const ConfirmEmail = () => {
       },
     });
   }, [code, verifyEmail]);
-  console.log(data);
   const isErrorOccurred = data?.verifyEmail.error;
   return (
     <div className="absolute top-0 h-screen w-screen flex flex-col gap-4 justify-center items-center -z-10">

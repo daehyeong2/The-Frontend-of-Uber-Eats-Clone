@@ -14,7 +14,7 @@ import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loading from "../../components/loading";
 
-const SEARCH_RESTAURANT = gql`
+export const SEARCH_RESTAURANT = gql`
   query searchRestaurant($input: SearchRestaurantInput!) {
     searchRestaurant(input: $input) {
       ok
