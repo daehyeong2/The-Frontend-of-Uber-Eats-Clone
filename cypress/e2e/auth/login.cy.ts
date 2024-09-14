@@ -17,14 +17,11 @@ describe("Log In", () => {
       .clear();
     cy.findByRole("alert").should("have.text", "비밀번호는 필수입니다.");
   });
-  it("can fill out the form", () => {
+  it("can fill out the form and log in", () => {
     cy.visit("/");
     cy.findByPlaceholderText(/email/i).type("baconbacon1231@gmail.com");
     cy.findByPlaceholderText(/password/i).type("test1234");
     cy.findByRole("button").should("not.be.disabled").click();
     cy.window().its("localStorage.nuber-token").should("be.a", "string");
-  });
-  it("sign up", () => {
-    cy.visit("/create-account");
   });
 });
