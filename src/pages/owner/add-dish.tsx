@@ -8,7 +8,6 @@ import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import Button from "../../components/button";
 import FormError from "../../components/form-error";
-import { MY_RESTAURANTS_QUERY } from "./my-restaurants";
 import { MY_RESTAURANT_QUERY } from "./my-restaurant";
 import { useState } from "react";
 
@@ -59,10 +58,19 @@ const AddDish = () => {
   const history = useHistory();
   const onSubmit = () => {
     const { name, description, price, ...rest } = getValues();
-    const optionObjects = optionsNumber.reverse().map((theId) => ({
-      name: rest[`${theId}-optionName`] as string,
-      extra: +rest[`${theId}-optionExtra`],
-    }));
+    const optionObjects = optionsNumber.reverse().map((theId) => {
+      const choiceObjects = choicesNumber
+        .filter((choice) => choice.includes(theId + ""))
+        .map((choice) => ({
+          name: rest[`${choice}-choiceName`] as string,
+          extra: +rest[`${choice}-choiceExtra`],
+        }));
+      return {
+        name: rest[`${theId}-optionName`] as string,
+        extra: +rest[`${theId}-optionExtra`],
+        choices: choiceObjects,
+      };
+    });
     try {
       createDishMutation({
         variables: {
@@ -82,6 +90,7 @@ const AddDish = () => {
     }
   };
   const [optionsNumber, setOptionsNumber] = useState<number[]>([]);
+  const [choicesNumber, setChoicesNumber] = useState<string[]>([]);
   const onAddOptionClick = () => {
     const id = Date.now();
     setOptionsNumber((current) => [id, ...current]);
@@ -89,8 +98,31 @@ const AddDish = () => {
       setFocus(`${id}-optionName`);
     }, 0);
   };
-  const onDeleteClick = (idToDelete: number) => {
+  const onAddChoiceClick = (idOfOption: number) => {
+    const id = Date.now();
+    setChoicesNumber((current) => [`${idOfOption}-${id}`, ...current]);
+    setTimeout(() => {
+      setFocus(`${idOfOption}-${id}-choiceName`);
+    }, 0);
+  };
+  const onDeleteChoice = (idToDelete: string) => {
+    setChoicesNumber((current) => current.filter((id) => id !== idToDelete));
+
+    unregister(`${idToDelete}-choiceName`, { keepValue: false });
+    unregister(`${idToDelete}-choiceExtra`, { keepValue: false });
+  };
+  const onDeleteOption = (idToDelete: number) => {
     setOptionsNumber((current) => current.filter((id) => id !== idToDelete));
+    setChoicesNumber((current) =>
+      current.filter((choiceId) => {
+        if (choiceId.startsWith(idToDelete + "")) {
+          unregister(`${choiceId}-choiceName`, { keepValue: false });
+          unregister(`${choiceId}-choiceExtra`, { keepValue: false });
+          return false;
+        }
+        return true;
+      })
+    );
 
     unregister(`${idToDelete}-optionName`, { keepValue: false });
     unregister(`${idToDelete}-optionExtra`, { keepValue: false });
@@ -158,27 +190,67 @@ const AddDish = () => {
           </button>
           {optionsNumber.length !== 0 &&
             optionsNumber.map((id) => (
-              <div key={id} className="mt-5 grid grid-cols-9 gap-2">
-                <input
-                  {...register(`${id}-optionName`)}
-                  className="focus:outline-none focus:border-gray-600 rounded-lg px-3 py-2 border-2 border-gray-300 col-span-4"
-                  type="text"
-                  placeholder="Option Name"
-                />
-                <input
-                  {...register(`${id}-optionExtra`)}
-                  className="focus:outline-none focus:border-gray-600 rounded-lg px-3 py-2 border-2 border-gray-300 col-span-4"
-                  type="number"
-                  min={0}
-                  placeholder="Option Extra"
-                />
-                <button
-                  onClick={() => onDeleteClick(id)}
-                  className="bg-red-500 rounded-xl text-white"
-                  type="button"
-                >
-                  Delete
-                </button>
+              <div key={id} className="flex flex-col gap-3">
+                <div className="mt-5 grid grid-cols-10 gap-2">
+                  <input
+                    {...register(`${id}-optionName`)}
+                    className="focus:outline-none focus:border-gray-600 rounded-lg px-3 py-2 border-2 border-gray-300 col-span-4"
+                    type="text"
+                    placeholder="Option Name"
+                  />
+                  <input
+                    {...register(`${id}-optionExtra`)}
+                    className="focus:outline-none focus:border-gray-600 rounded-lg px-3 py-2 border-2 border-gray-300 col-span-4"
+                    type="number"
+                    min={0}
+                    placeholder="Option Extra"
+                  />
+                  <button
+                    onClick={() => onAddChoiceClick(id)}
+                    className="bg-blue-500 rounded-xl text-white"
+                    type="button"
+                  >
+                    Add
+                  </button>
+                  <button
+                    onClick={() => onDeleteOption(id)}
+                    className="bg-red-500 rounded-xl text-white"
+                    type="button"
+                  >
+                    Delete
+                  </button>
+                </div>
+                {choicesNumber.length !== 0 &&
+                  choicesNumber.map(
+                    (choiceId) =>
+                      choiceId.startsWith(id + "") && (
+                        <div
+                          key={choiceId}
+                          className="mt-3 grid grid-cols-30 gap-2"
+                        >
+                          <input
+                            {...register(`${choiceId}-choiceName`)}
+                            className="focus:outline-none focus:border-gray-600 rounded-lg px-3 py-2 border-2 border-gray-300 col-span-13 col-start-2"
+                            type="text"
+                            placeholder="Choice Name"
+                          />
+                          <input
+                            {...register(`${choiceId}-choiceExtra`)}
+                            className="focus:outline-none focus:border-gray-600 rounded-lg px-3 py-2 border-2 border-gray-300 col-span-13"
+                            type="number"
+                            min={0}
+                            placeholder="Choice Extra"
+                          />
+                          <button
+                            onClick={() => onDeleteChoice(choiceId)}
+                            className="bg-red-500 rounded-xl text-white col-span-3"
+                            type="button"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )
+                  )}
               </div>
             ))}
         </div>

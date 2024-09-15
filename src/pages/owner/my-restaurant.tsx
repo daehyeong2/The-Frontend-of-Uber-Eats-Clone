@@ -78,7 +78,7 @@ const MyRestaurant = () => {
         </div>
       </div>
       <div className="container">
-        <div className="flex gap-5 mt-3">
+        <div className="flex gap-5 mt-3 px-7 2xl:px-0">
           <Link
             to={`/restaurants/${id}/add-dish`}
             className="text-sm bg-slate-800 text-white font-freesentation tracking-wide font-medium px-5 py-2.5"

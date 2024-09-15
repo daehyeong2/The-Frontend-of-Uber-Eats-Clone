@@ -9,6 +9,12 @@ module.exports = {
         neutral: colors.neutral,
         lime: colors.lime,
       },
+      gridTemplateColumns: {
+        30: "repeat(30, minmax(0, 1fr))",
+      },
+      gridColumn: {
+        "span-13": "span 13 / span 13",
+      },
       animation: {
         "bounce-10": "bounce-10 750ms ease-in-out infinite",
       },

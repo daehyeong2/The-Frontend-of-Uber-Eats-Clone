@@ -9,7 +9,6 @@ import {
   createRestaurantVariables,
 } from "../../__generated__/createRestaurant";
 import { MY_RESTAURANTS_QUERY } from "./my-restaurants";
-import { useHistory } from "react-router-dom";
 
 const CREATE_RESTAURANT_MUTATION = gql`
   mutation createRestaurant($input: CreateRestaurantInput!) {
@@ -31,7 +30,6 @@ interface IFormProps {
 const AddRestaurant = () => {
   const client = useApolloClient();
   const [imageUrl, setImageUrl] = useState("");
-  const history = useHistory();
   const onCompleted = (data: createRestaurant) => {
     const { name, categoryName, address } = getValues();
     const {
