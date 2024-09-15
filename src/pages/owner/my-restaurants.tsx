@@ -1,10 +1,9 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { RESTAURANT_FRAGMENT } from "../../fragments";
 import { myRestaurants } from "../../__generated__/myRestaurants";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import RestaurantSection from "../../components/restaurantSection";
-import { useEffect } from "react";
 
 export const MY_RESTAURANTS_QUERY = gql`
   query myRestaurants {
@@ -20,20 +19,7 @@ export const MY_RESTAURANTS_QUERY = gql`
 `;
 
 const MyRestaurants = () => {
-  const { data, loading } = useQuery<myRestaurants>(MY_RESTAURANTS_QUERY);
-  const client = useApolloClient();
-  useEffect(() => {
-    const queryResult = client.readQuery({ query: MY_RESTAURANTS_QUERY });
-    if (!queryResult) return;
-    console.log(queryResult);
-    client.writeQuery({
-      query: MY_RESTAURANTS_QUERY,
-      data: {
-        ...queryResult,
-        restaurants: [...(queryResult?.restaurants ?? [])],
-      },
-    });
-  }, [loading]);
+  const { data } = useQuery<myRestaurants>(MY_RESTAURANTS_QUERY);
   return (
     <div>
       <Helmet>

@@ -1,4 +1,4 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql, useApolloClient, useMutation } from "@apollo/client";
 import { useForm } from "react-hook-form";
 import Button from "../../components/button";
 import { Helmet } from "react-helmet-async";
@@ -8,6 +8,8 @@ import {
   createRestaurant,
   createRestaurantVariables,
 } from "../../__generated__/createRestaurant";
+import { MY_RESTAURANTS_QUERY } from "./my-restaurants";
+import { useHistory } from "react-router-dom";
 
 const CREATE_RESTAURANT_MUTATION = gql`
   mutation createRestaurant($input: CreateRestaurantInput!) {
@@ -27,14 +29,41 @@ interface IFormProps {
 }
 
 const AddRestaurant = () => {
+  const client = useApolloClient();
+  const [imageUrl, setImageUrl] = useState("");
+  const history = useHistory();
   const onCompleted = (data: createRestaurant) => {
-    console.log(data);
+    const { name, categoryName, address } = getValues();
     const {
       createRestaurant: { ok, restaurantId },
     } = data;
     if (ok) {
       setUploading(false);
-      // fake
+      const queryResult = client.readQuery({ query: MY_RESTAURANTS_QUERY });
+      client.writeQuery({
+        query: MY_RESTAURANTS_QUERY,
+        data: {
+          myRestaurants: {
+            ...(queryResult?.myRestaurants ?? {}),
+            restaurants: [
+              {
+                id: restaurantId,
+                name: name,
+                coverImg: imageUrl,
+                category: {
+                  name: categoryName,
+                  __typename: "Category",
+                },
+                isPromoted: false,
+                address,
+                __typename: "Restaurant",
+              },
+              ...(queryResult?.myRestaurants.restaurants ?? []),
+            ],
+          },
+        },
+      });
+      history.push("/");
     }
   };
   const [createRestaurantMutation, { data }] = useMutation<
@@ -65,6 +94,7 @@ const AddRestaurant = () => {
           body: formBody,
         })
       ).json();
+      setImageUrl(coverImg);
       createRestaurantMutation({
         variables: {
           input: {
