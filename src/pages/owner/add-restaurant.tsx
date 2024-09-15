@@ -40,30 +40,32 @@ const AddRestaurant = () => {
     if (ok) {
       setUploading(false);
       const queryResult = client.readQuery({ query: MY_RESTAURANTS_QUERY });
-      client.writeQuery({
-        query: MY_RESTAURANTS_QUERY,
-        data: {
-          myRestaurants: {
-            ...(queryResult?.myRestaurants ?? {}),
-            restaurants: [
-              {
-                id: restaurantId,
-                name: name,
-                coverImg: imageUrl,
-                category: {
-                  name: categoryName,
-                  __typename: "Category",
+      if (queryResult) {
+        client.writeQuery({
+          query: MY_RESTAURANTS_QUERY,
+          data: {
+            myRestaurants: {
+              ...queryResult?.myRestaurants,
+              restaurants: [
+                {
+                  id: restaurantId,
+                  name: name,
+                  coverImg: imageUrl,
+                  category: {
+                    name: categoryName,
+                    __typename: "Category",
+                  },
+                  isPromoted: false,
+                  address,
+                  __typename: "Restaurant",
                 },
-                isPromoted: false,
-                address,
-                __typename: "Restaurant",
-              },
-              ...(queryResult?.myRestaurants.restaurants ?? []),
-            ],
+                ...queryResult?.myRestaurants.restaurants,
+              ],
+            },
           },
-        },
-      });
-      history.push("/");
+        });
+      }
+      window.location.href = "/";
     }
   };
   const [createRestaurantMutation, { data }] = useMutation<

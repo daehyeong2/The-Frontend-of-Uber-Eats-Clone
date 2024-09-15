@@ -13,6 +13,7 @@ import React from "react";
 import { UserRole } from "../__generated__/globalTypes";
 import MyRestaurants from "../pages/owner/my-restaurants";
 import AddRestaurant from "../pages/owner/add-restaurant";
+import MyRestaurant from "../pages/owner/my-restaurant";
 
 interface IRoute {
   path: string;
@@ -51,6 +52,10 @@ const ownerRoutes: IRoute[] = [
   {
     path: "/add-restaurant",
     component: <AddRestaurant />,
+  },
+  {
+    path: "/restaurants/:id",
+    component: <MyRestaurant />,
   },
 ];
 
