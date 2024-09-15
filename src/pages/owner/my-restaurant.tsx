@@ -46,6 +46,15 @@ const MyRestaurant = () => {
     }
   );
   console.log(data);
+  const chartData = [
+    { x: 1, y: 3000 },
+    { x: 2, y: 1500 },
+    { x: 3, y: 4250 },
+    { x: 4, y: 2300 },
+    { x: 5, y: 7150 },
+    { x: 6, y: 6830 },
+    { x: 7, y: 13023 },
+  ];
   return (
     <div>
       <Helmet>
@@ -121,16 +130,12 @@ const MyRestaurant = () => {
           </h3>
           <div className="mt-10 max-w-lg w-full mx-auto mb-10">
             <VictoryChart domainPadding={30}>
-              <VictoryAxis label="Amont of Money" dependentAxis />
-              <VictoryAxis label="Days of Life" />
-              <VictoryBar
-                data={[
-                  { x: 10, y: 20 },
-                  { x: 20, y: 15 },
-                  { x: 30, y: 25 },
-                  { x: 40, y: 50 },
-                ]}
+              <VictoryAxis
+                tickFormat={(step) => `$${step / 1000}K`}
+                dependentAxis
               />
+              <VictoryAxis tickFormat={(step) => `Day ${step}`} />
+              <VictoryBar data={chartData} />
             </VictoryChart>
           </div>
         </div>
