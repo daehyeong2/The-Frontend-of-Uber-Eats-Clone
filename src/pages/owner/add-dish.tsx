@@ -10,6 +10,7 @@ import Button from "../../components/button";
 import FormError from "../../components/form-error";
 import { MY_RESTAURANTS_QUERY } from "./my-restaurants";
 import { MY_RESTAURANT_QUERY } from "./my-restaurant";
+import { useState } from "react";
 
 const CREATE_DISH_MUTATION = gql`
   mutation createDish($input: CreateDishInput!) {
@@ -49,28 +50,41 @@ const AddDish = () => {
     handleSubmit,
     formState: { errors, isValid },
     getValues,
+    setValue,
   } = useForm<IForm>({
     mode: "onChange",
   });
   const history = useHistory();
   const onSubmit = () => {
-    const { name, description, price } = getValues();
-    try {
-      createDishMutation({
-        variables: {
-          input: {
-            name,
-            description,
-            price: +price,
-            photo: "",
-            restaurantId: +restaurantId,
-          },
-        },
-      });
-      history.push(`/restaurants/${restaurantId}`);
-    } catch (e) {
-      console.log(e);
-    }
+    const { name, description, price, ...rest } = getValues();
+    console.log(rest);
+    // try {
+    //   createDishMutation({
+    //     variables: {
+    //       input: {
+    //         name,
+    //         description,
+    //         price: +price,
+    //         photo: "",
+    //         restaurantId: +restaurantId,
+    //       },
+    //     },
+    //   });
+    //   history.push(`/restaurants/${restaurantId}`);
+    // } catch (e) {
+    //   console.log(e);
+    // }
+  };
+  const [optionsNumber, setOptionsNumber] = useState(0);
+  const onAddOptionClick = () => {
+    setOptionsNumber((prev) => prev + 1);
+  };
+  const onDeleteClick = (idToDelete: number) => {
+    setOptionsNumber((prev) => prev - 1);
+    // @ts-ignore
+    setValue(`${idToDelete}-optionName`, "");
+    // @ts-ignore
+    setValue(`${idToDelete}-optionExtra`, "");
   };
   return (
     <div className="container">
@@ -124,6 +138,43 @@ const AddDish = () => {
         {errors.photo?.message && (
           <FormError errorMessage={errors.photo.message} />
         )}
+        <div className="my-5">
+          <h4 className="font-medium font-freesentation">Dish Options</h4>
+          <button
+            type="button"
+            onClick={onAddOptionClick}
+            className="bg-black text-white rounded-sm p-1 text-xs mt-2"
+          >
+            Add Dish Option
+          </button>
+          {optionsNumber !== 0 &&
+            Array.from(new Array(optionsNumber)).map((_, idx) => (
+              <div key={idx} className="mt-5 grid grid-cols-9 gap-2">
+                <input
+                  // @ts-ignore
+                  {...register(`${idx}-optionName`)}
+                  className="focus:outline-none focus:border-gray-600 rounded-lg px-3 py-2 border-2 border-gray-300 col-span-4"
+                  type="text"
+                  placeholder="Option Name"
+                />
+                <input
+                  // @ts-ignore
+                  {...register(`${idx}-optionExtra`)}
+                  className="focus:outline-none focus:border-gray-600 rounded-lg px-3 py-2 border-2 border-gray-300 col-span-4"
+                  type="number"
+                  min={0}
+                  placeholder="Option Extra"
+                />
+                <button
+                  onClick={() => onDeleteClick(idx)}
+                  className="bg-red-500 rounded-xl text-white"
+                  type="button"
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
+        </div>
         <Button
           className="mt-2"
           canClick={isValid}

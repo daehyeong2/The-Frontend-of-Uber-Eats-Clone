@@ -16,6 +16,7 @@ const Button: React.FC<IButtonProps> = ({
 }) => {
   return (
     <button
+      type="submit"
       disabled={!canClick}
       className={cn(
         "text-white py-3 w-full text-lg transition-all",
