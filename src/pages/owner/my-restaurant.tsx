@@ -7,6 +7,7 @@ import {
 } from "../../__generated__/myRestaurant";
 import { Helmet } from "react-helmet-async";
 import Dish from "../../components/dish";
+import { VictoryAxis, VictoryBar, VictoryChart } from "victory";
 
 export const MY_RESTAURANT_QUERY = gql`
   query myRestaurant($input: MyRestaurantInput!) {
@@ -113,6 +114,25 @@ const MyRestaurant = () => {
               </div>
             </>
           )}
+        </div>
+        <div className="container mt-14">
+          <h3 className="text-center text-2xl font-freesentation font-medium">
+            Sales
+          </h3>
+          <div className="mt-10 max-w-lg w-full mx-auto mb-10">
+            <VictoryChart domainPadding={30}>
+              <VictoryAxis label="Amont of Money" dependentAxis />
+              <VictoryAxis label="Days of Life" />
+              <VictoryBar
+                data={[
+                  { x: 10, y: 20 },
+                  { x: 20, y: 15 },
+                  { x: 30, y: 25 },
+                  { x: 40, y: 50 },
+                ]}
+              />
+            </VictoryChart>
+          </div>
         </div>
       </div>
     </div>
