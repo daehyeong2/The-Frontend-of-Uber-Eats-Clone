@@ -28,8 +28,9 @@ interface IAddDishProps {
 interface IForm {
   name: string;
   price: string;
-  photo: FileList;
   description: string;
+  photo: FileList;
+  [key: string]: string | FileList;
 }
 
 const AddDish = () => {
@@ -50,41 +51,49 @@ const AddDish = () => {
     handleSubmit,
     formState: { errors, isValid },
     getValues,
-    setValue,
+    setFocus,
+    unregister,
   } = useForm<IForm>({
     mode: "onChange",
   });
   const history = useHistory();
   const onSubmit = () => {
     const { name, description, price, ...rest } = getValues();
-    console.log(rest);
-    // try {
-    //   createDishMutation({
-    //     variables: {
-    //       input: {
-    //         name,
-    //         description,
-    //         price: +price,
-    //         photo: "",
-    //         restaurantId: +restaurantId,
-    //       },
-    //     },
-    //   });
-    //   history.push(`/restaurants/${restaurantId}`);
-    // } catch (e) {
-    //   console.log(e);
-    // }
+    const optionObjects = optionsNumber.reverse().map((theId) => ({
+      name: rest[`${theId}-optionName`] as string,
+      extra: +rest[`${theId}-optionExtra`],
+    }));
+    try {
+      createDishMutation({
+        variables: {
+          input: {
+            name,
+            description,
+            price: +price,
+            photo: "",
+            options: optionObjects,
+            restaurantId: +restaurantId,
+          },
+        },
+      });
+      history.push(`/restaurants/${restaurantId}`);
+    } catch (e) {
+      console.log(e);
+    }
   };
-  const [optionsNumber, setOptionsNumber] = useState(0);
+  const [optionsNumber, setOptionsNumber] = useState<number[]>([]);
   const onAddOptionClick = () => {
-    setOptionsNumber((prev) => prev + 1);
+    const id = Date.now();
+    setOptionsNumber((current) => [id, ...current]);
+    setTimeout(() => {
+      setFocus(`${id}-optionName`);
+    }, 0);
   };
   const onDeleteClick = (idToDelete: number) => {
-    setOptionsNumber((prev) => prev - 1);
-    // @ts-ignore
-    setValue(`${idToDelete}-optionName`, "");
-    // @ts-ignore
-    setValue(`${idToDelete}-optionExtra`, "");
+    setOptionsNumber((current) => current.filter((id) => id !== idToDelete));
+
+    unregister(`${idToDelete}-optionName`, { keepValue: false });
+    unregister(`${idToDelete}-optionExtra`, { keepValue: false });
   };
   return (
     <div className="container">
@@ -143,30 +152,28 @@ const AddDish = () => {
           <button
             type="button"
             onClick={onAddOptionClick}
-            className="bg-black text-white rounded-sm p-1 text-xs mt-2"
+            className="bg-black text-white rounded-sm p-1 text-xs mt-3"
           >
             Add Dish Option
           </button>
-          {optionsNumber !== 0 &&
-            Array.from(new Array(optionsNumber)).map((_, idx) => (
-              <div key={idx} className="mt-5 grid grid-cols-9 gap-2">
+          {optionsNumber.length !== 0 &&
+            optionsNumber.map((id) => (
+              <div key={id} className="mt-5 grid grid-cols-9 gap-2">
                 <input
-                  // @ts-ignore
-                  {...register(`${idx}-optionName`)}
+                  {...register(`${id}-optionName`)}
                   className="focus:outline-none focus:border-gray-600 rounded-lg px-3 py-2 border-2 border-gray-300 col-span-4"
                   type="text"
                   placeholder="Option Name"
                 />
                 <input
-                  // @ts-ignore
-                  {...register(`${idx}-optionExtra`)}
+                  {...register(`${id}-optionExtra`)}
                   className="focus:outline-none focus:border-gray-600 rounded-lg px-3 py-2 border-2 border-gray-300 col-span-4"
                   type="number"
                   min={0}
                   placeholder="Option Extra"
                 />
                 <button
-                  onClick={() => onDeleteClick(idx)}
+                  onClick={() => onDeleteClick(id)}
                   className="bg-red-500 rounded-xl text-white"
                   type="button"
                 >
