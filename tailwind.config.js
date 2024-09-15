@@ -9,6 +9,9 @@ module.exports = {
         neutral: colors.neutral,
         lime: colors.lime,
       },
+      screens: {
+        "2.5xl": "1350px",
+      },
       gridTemplateColumns: {
         30: "repeat(30, minmax(0, 1fr))",
       },

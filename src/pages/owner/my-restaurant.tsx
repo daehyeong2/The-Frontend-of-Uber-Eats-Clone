@@ -6,6 +6,7 @@ import {
   myRestaurantVariables,
 } from "../../__generated__/myRestaurant";
 import { Helmet } from "react-helmet-async";
+import Dish from "../../components/dish";
 
 export const MY_RESTAURANT_QUERY = gql`
   query myRestaurant($input: MyRestaurantInput!) {
@@ -61,8 +62,8 @@ const MyRestaurant = () => {
           })`,
         }}
       >
-        <div className="bg-white w-1/4 py-4 pl-24">
-          <h2 className="text-3xl mb-2.5">
+        <div className="bg-white w-3/4 sm:w-1/3 xl:w-1/4 py-4 pl-12 pr-12 xl:pl-24">
+          <h2 className="text-2xl md:text-3xl mb-2.5">
             {data?.myRestaurant.restaurant?.name ?? "Loading.."}
           </h2>
           <Link
@@ -92,10 +93,26 @@ const MyRestaurant = () => {
             Buy Promotion &rarr;
           </Link>
         </div>
-        <div>
+        <div className="container px-7 2xl:px-0">
           {data?.myRestaurant.restaurant?.menu.length === 0 ? (
             <h4 className="text-lg mt-5">Please upload a dish!</h4>
-          ) : null}
+          ) : (
+            <>
+              <h4 className="text-2xl font-freesentation font-medium mt-7">
+                Menu
+              </h4>
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-x-4 gap-y-5 mt-4">
+                {data?.myRestaurant.restaurant?.menu.map((dish) => (
+                  <Dish
+                    name={dish.name}
+                    description={dish.description}
+                    price={dish.price}
+                    photo={dish.photo ?? ""}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
