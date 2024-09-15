@@ -117,7 +117,9 @@ const AddRestaurant = () => {
       <Helmet>
         <title>Add Restaurant | Nuber Eats</title>
       </Helmet>
-      <h1>Add Restaurant</h1>
+      <h1 className="text-2xl font-medium font-freesentation">
+        Add Restaurant
+      </h1>
       <form
         className="grid gap-2 max-w-screen-sm w-full mt-7"
         onSubmit={handleSubmit(onSubmit)}
@@ -156,6 +158,7 @@ const AddRestaurant = () => {
             {...register("file", { required: "배경 사진은 필수입니다." })}
             type="file"
             accept="image/*"
+            className="input w-full"
           />
           {errors.file?.message && (
             <FormError errorMessage={errors.file?.message} />
