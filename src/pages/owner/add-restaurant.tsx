@@ -2,18 +2,19 @@ import { gql, useMutation } from "@apollo/client";
 import { useForm } from "react-hook-form";
 import Button from "../../components/button";
 import { Helmet } from "react-helmet-async";
+import { useState } from "react";
+import FormError from "../../components/form-error";
 import {
   createRestaurant,
   createRestaurantVariables,
 } from "../../__generated__/createRestaurant";
-import { useState } from "react";
-import FormError from "../../components/form-error";
 
 const CREATE_RESTAURANT_MUTATION = gql`
   mutation createRestaurant($input: CreateRestaurantInput!) {
     createRestaurant(input: $input) {
       ok
       error
+      restaurantId
     }
   }
 `;
@@ -27,11 +28,13 @@ interface IFormProps {
 
 const AddRestaurant = () => {
   const onCompleted = (data: createRestaurant) => {
+    console.log(data);
     const {
-      createRestaurant: { ok, error },
+      createRestaurant: { ok, restaurantId },
     } = data;
     if (ok) {
       setUploading(false);
+      // fake
     }
   };
   const [createRestaurantMutation, { data }] = useMutation<
@@ -93,12 +96,18 @@ const AddRestaurant = () => {
           type="text"
           className="input"
         />
+        {errors.name?.message && (
+          <FormError errorMessage={errors.name?.message} />
+        )}
         <input
           {...register("address", { required: "주소는 필수입니다." })}
           placeholder="주소를 입력해 주세요."
           type="text"
           className="input"
         />
+        {errors.address?.message && (
+          <FormError errorMessage={errors.address?.message} />
+        )}
         <input
           {...register("categoryName", {
             required: "카테고리 이름은 필수입니다.",
@@ -107,12 +116,18 @@ const AddRestaurant = () => {
           type="text"
           className="input"
         />
+        {errors.categoryName?.message && (
+          <FormError errorMessage={errors.categoryName?.message} />
+        )}
         <div>
           <input
             {...register("file", { required: "배경 사진은 필수입니다." })}
             type="file"
             accept="image/*"
           />
+          {errors.file?.message && (
+            <FormError errorMessage={errors.file?.message} />
+          )}
         </div>
         <Button
           className="mt-3"

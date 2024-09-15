@@ -14,13 +14,12 @@ const Restaurant: React.FC<IRestaurantProps> = ({
   coverImg,
   categoryName,
 }) => {
-  console.log(coverImg);
   return (
     <Link className="flex flex-col" to={`/restaurants/${id}`}>
       <div
         className="bg-cover bg-center py-28 mb-3"
         style={{
-          backgroundImage: `url(${coverImg})`,
+          backgroundImage: `url(${encodeURI(coverImg)})`,
         }}
       />
       <h3 className="text-xl font-freesentation font-semibold">{name}</h3>
