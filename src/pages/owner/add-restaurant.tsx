@@ -1,14 +1,16 @@
 import { gql, useMutation } from "@apollo/client";
-import {
-  createAccountMutation,
-  createAccountMutationVariables,
-} from "../../__generated__/createAccountMutation";
 import { useForm } from "react-hook-form";
 import Button from "../../components/button";
 import { Helmet } from "react-helmet-async";
+import {
+  createRestaurant,
+  createRestaurantVariables,
+} from "../../__generated__/createRestaurant";
+import { useState } from "react";
+import FormError from "../../components/form-error";
 
 const CREATE_RESTAURANT_MUTATION = gql`
-  mutation createRestaurant($input: CreateRestaurantInput) {
+  mutation createRestaurant($input: CreateRestaurantInput!) {
     createRestaurant(input: $input) {
       ok
       error
@@ -20,13 +22,24 @@ interface IFormProps {
   name: string;
   address: string;
   categoryName: string;
+  file: FileList;
 }
 
 const AddRestaurant = () => {
-  const [createRestaurantMutation, { data, loading }] = useMutation<
-    createAccountMutation,
-    createAccountMutationVariables
-  >(CREATE_RESTAURANT_MUTATION);
+  const onCompleted = (data: createRestaurant) => {
+    const {
+      createRestaurant: { ok, error },
+    } = data;
+    if (ok) {
+      setUploading(false);
+    }
+  };
+  const [createRestaurantMutation, { data }] = useMutation<
+    createRestaurant,
+    createRestaurantVariables
+  >(CREATE_RESTAURANT_MUTATION, {
+    onCompleted,
+  });
   const {
     register,
     handleSubmit,
@@ -35,8 +48,34 @@ const AddRestaurant = () => {
   } = useForm<IFormProps>({
     mode: "onChange",
   });
-  const onSubmit = () => {
-    console.log(getValues());
+  const [uploading, setUploading] = useState(false);
+  const onSubmit = async () => {
+    const { name, categoryName, address, file } = getValues();
+    try {
+      setUploading(true);
+      const actualFile = file[0];
+      const formBody = new FormData();
+      formBody.append("file", actualFile);
+      const { url: coverImg } = await (
+        await fetch("http://localhost:4000/uploads", {
+          method: "POST",
+          body: formBody,
+        })
+      ).json();
+      createRestaurantMutation({
+        variables: {
+          input: {
+            name,
+            address,
+            categoryName,
+            coverImg,
+          },
+        },
+      });
+    } catch (e) {
+      setUploading(false);
+      console.log(e);
+    }
   };
   return (
     <div className="container flex flex-col items-center">
@@ -68,12 +107,22 @@ const AddRestaurant = () => {
           type="text"
           className="input"
         />
+        <div>
+          <input
+            {...register("file", { required: "배경 사진은 필수입니다." })}
+            type="file"
+            accept="image/*"
+          />
+        </div>
         <Button
           className="mt-3"
           canClick={isValid}
           text="Create Restaurant"
-          loading={loading}
+          loading={uploading}
         />
+        {data?.createRestaurant.error && (
+          <FormError errorMessage={data.createRestaurant.error} />
+        )}
       </form>
     </div>
   );
