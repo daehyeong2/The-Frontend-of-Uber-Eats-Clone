@@ -38,10 +38,18 @@ export interface myRestaurant_myRestaurant_restaurant_menu {
   options: myRestaurant_myRestaurant_restaurant_menu_options[] | null;
 }
 
+export interface myRestaurant_myRestaurant_restaurant_orders {
+  __typename: "Order";
+  id: number;
+  createdAt: any;
+  total: number | null;
+}
+
 export interface myRestaurant_myRestaurant_restaurant {
   __typename: "Restaurant";
   category: myRestaurant_myRestaurant_restaurant_category | null;
   menu: myRestaurant_myRestaurant_restaurant_menu[];
+  orders: myRestaurant_myRestaurant_restaurant_orders[];
   id: number;
   name: string;
   coverImg: string;
