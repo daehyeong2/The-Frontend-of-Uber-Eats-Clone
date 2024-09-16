@@ -9,6 +9,7 @@ import { Helmet } from "react-helmet-async";
 import Dish from "../../components/dish";
 import { useState } from "react";
 import { CreateOrderItemInput } from "../../__generated__/globalTypes";
+import { cn } from "../../utils/cn";
 
 export const RESTAURANT_QUERY = gql`
   query restaurant($input: RestaurantInput!) {
@@ -57,21 +58,12 @@ const RestaurantDetail = () => {
   const triggerStartOrder = () => {
     setOrderStarted(true);
   };
-  const isSelected = (dishId: number) => {
-    return (
-      orderItems.findIndex((orderItem) => orderItem.dishId === dishId) !== -1
-    );
+  const triggetStopOrder = () => {
+    setOrderStarted(false);
+    setOrderItems([]);
   };
-  const addItemToOrder = (dishId: number) => {
-    if (isSelected(dishId)) {
-      return;
-    }
-    setOrderItems((current) => [{ dishId }, ...current]);
-  };
-  const removeFromOrder = (dishId: number) => {
-    setOrderItems((current) =>
-      current.filter((dish) => dish.dishId !== dishId)
-    );
+  const addItemToOrder = (dish: CreateOrderItemInput) => {
+    setOrderItems((current) => [dish, ...current]);
   };
   console.log(orderItems);
   return (
@@ -110,16 +102,17 @@ const RestaurantDetail = () => {
       <div className="container px-7 mb-20">
         <div className="flex justify-between">
           <h4 className="text-3xl font-freesentation font-medium mt-7">Menu</h4>
-          <button onClick={triggerStartOrder} className="btn rounded-xl">
-            {orderStarted ? "Ordering.." : "Start Order"}
+          <button
+            onClick={orderStarted ? triggetStopOrder : triggerStartOrder}
+            className={cn("btn rounded-xl", orderStarted && "bg-red-500")}
+          >
+            {orderStarted ? "Stop Order" : "Start Order"}
           </button>
         </div>
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-x-4 gap-y-5 mt-10">
           {data?.restaurant.restaurant?.menu.map((dish) => (
             <Dish
-              isSelected={isSelected(dish.id)}
               orderStarted={orderStarted}
-              restaurantId={+params.id}
               key={dish.id}
               id={dish.id}
               name={dish.name}
@@ -129,7 +122,6 @@ const RestaurantDetail = () => {
               options={dish.options ?? []}
               isCustomer={true}
               addItemToOrder={addItemToOrder}
-              removeFromOrder={removeFromOrder}
             />
           ))}
         </div>

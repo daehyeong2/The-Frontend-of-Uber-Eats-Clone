@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { restaurant_restaurant_restaurant_menu_options } from "../__generated__/restaurant";
 import { cn } from "../utils/cn";
 import { useForm } from "react-hook-form";
+import { CreateOrderItemInput } from "../__generated__/globalTypes";
 
 interface IDishProps {
-  restaurantId?: number;
   id: number;
   name: string;
   price: number;
@@ -13,9 +13,7 @@ interface IDishProps {
   isCustomer?: boolean;
   options?: restaurant_restaurant_restaurant_menu_options[];
   orderStarted?: boolean;
-  addItemToOrder?: (dishId: number) => void;
-  removeFromOrder?: (dishId: number) => void;
-  isSelected?: boolean;
+  addItemToOrder?: (dish: CreateOrderItemInput) => void;
 }
 
 interface ISelection {
@@ -25,7 +23,6 @@ interface ISelection {
 }
 
 const Dish: React.FC<IDishProps> = ({
-  restaurantId,
   id,
   name,
   price,
@@ -35,13 +32,12 @@ const Dish: React.FC<IDishProps> = ({
   isCustomer = false,
   orderStarted = false,
   addItemToOrder,
-  removeFromOrder,
-  isSelected,
 }) => {
   const { register, handleSubmit } = useForm({
     mode: "onChange",
   });
   const [selections, setSelections] = useState<ISelection[]>([]);
+  const [quantity, setQuantity] = useState(0);
   const onSubmit = () => {
     const itemOptions: { name: string; choice?: string }[] = [];
     selections.map((selection) => {
@@ -53,16 +49,13 @@ const Dish: React.FC<IDishProps> = ({
         itemOptions.push({ name: option.name });
       }
     });
-    const input = {
-      restaurantId,
-      items: [
-        {
-          dishId: id,
-          options: itemOptions,
-        },
-      ],
-    };
-    console.log(input);
+    if (addItemToOrder) {
+      addItemToOrder({
+        dishId: id,
+        options: itemOptions,
+      });
+      setQuantity((prev) => prev + 1);
+    }
   };
   const onChange = (data: React.ChangeEvent<HTMLInputElement>) => {
     const {
@@ -84,22 +77,17 @@ const Dish: React.FC<IDishProps> = ({
       ]);
     }
   };
-  const onClick = () => {
-    if (orderStarted) {
-      if (isSelected && removeFromOrder) {
-        removeFromOrder(id);
-      } else if (addItemToOrder) {
-        addItemToOrder!(id);
-      }
+  useEffect(() => {
+    if (!orderStarted) {
+      setSelections([]);
+      setQuantity(0);
     }
-  };
+  }, [orderStarted]);
   return (
     <div
-      onClick={onClick}
       className={cn(
         "p-4 grid grid-cols-3 border cursor-pointer border-gray-300 hover:border-gray-500 transition-colors group",
-        isCustomer && "grid-rows-2",
-        isSelected && "border-gray-800 hover:border-gray-800"
+        isCustomer && orderStarted && "grid-rows-2"
       )}
     >
       <div
@@ -121,7 +109,7 @@ const Dish: React.FC<IDishProps> = ({
         src={photo}
         alt={name}
       />
-      {isCustomer && (
+      {isCustomer && orderStarted && (
         <div className="col-span-3 flex flex-col">
           {options?.length !== 0 && (
             <>
@@ -210,7 +198,7 @@ const Dish: React.FC<IDishProps> = ({
                     </span>
                   </h4>
                   <button className="w-fit px-3 py-1.5 ml-auto font-freesentation bg-blue-500 text-white rounded-md mt-2">
-                    Add to Cart
+                    Add to Cart{quantity !== 0 && ` (${quantity})`}
                   </button>
                 </div>
               </form>
