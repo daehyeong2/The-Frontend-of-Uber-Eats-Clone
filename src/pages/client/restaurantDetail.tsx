@@ -7,6 +7,8 @@ import {
 } from "../../__generated__/restaurant";
 import { Helmet } from "react-helmet-async";
 import Dish from "../../components/dish";
+import { useState } from "react";
+import { CreateOrderItemInput } from "../../__generated__/globalTypes";
 
 export const RESTAURANT_QUERY = gql`
   query restaurant($input: RestaurantInput!) {
@@ -28,6 +30,15 @@ export const RESTAURANT_QUERY = gql`
   ${DISH_FRAGMENT}
 `;
 
+const CREATE_ORDER_MUTATION = gql`
+  mutation createOrder($input: CreateOrderInput!) {
+    createOrder(input: $input) {
+      ok
+      error
+    }
+  }
+`;
+
 interface IRestaurantDetailParams {
   id: string;
 }
@@ -41,6 +52,15 @@ const RestaurantDetail = () => {
       },
     },
   });
+  const [orderStarted, setOrderStarted] = useState(false);
+  const [orderItems, setOrderItems] = useState<CreateOrderItemInput[]>([]);
+  const triggerStartOrder = () => {
+    setOrderStarted(true);
+  };
+  const addItemToOrder = (dishId: number) => {
+    setOrderItems((current) => [{ dishId }, ...current]);
+  };
+  console.log(orderItems);
   return (
     <div>
       <Helmet>
@@ -75,10 +95,16 @@ const RestaurantDetail = () => {
         </div>
       </div>
       <div className="container px-7 mb-20">
-        <h4 className="text-2xl font-freesentation font-medium mt-7">Menu</h4>
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-x-4 gap-y-5 mt-4">
+        <div className="flex justify-between">
+          <h4 className="text-3xl font-freesentation font-medium mt-7">Menu</h4>
+          <button onClick={triggerStartOrder} className="btn rounded-xl">
+            Start Order
+          </button>
+        </div>
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-x-4 gap-y-5 mt-10">
           {data?.restaurant.restaurant?.menu.map((dish) => (
             <Dish
+              orderStarted={orderStarted}
               restaurantId={+params.id}
               key={dish.id}
               id={dish.id}
@@ -88,6 +114,7 @@ const RestaurantDetail = () => {
               photo={dish.photo ?? ""}
               options={dish.options ?? []}
               isCustomer={true}
+              addItemToOrder={addItemToOrder}
             />
           ))}
         </div>

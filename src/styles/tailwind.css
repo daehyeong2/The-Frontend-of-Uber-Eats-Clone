@@ -13,6 +13,10 @@
   @apply text-lime-600 hover:underline;
 }
 
+.btn {
+  @apply text-white h-fit my-auto px-3 py-2 text-lg transition-all bg-lime-700 hover:opacity-90;
+}
+
 @font-face {
   font-family: "freesentation";
   font-weight: 300;
