@@ -14,6 +14,7 @@ interface IDishProps {
   options?: restaurant_restaurant_restaurant_menu_options[];
   orderStarted?: boolean;
   addItemToOrder?: (dish: CreateOrderItemInput) => void;
+  removeItemFromOrder?: (dishId: number) => void;
 }
 
 interface ISelection {
@@ -32,6 +33,7 @@ const Dish: React.FC<IDishProps> = ({
   isCustomer = false,
   orderStarted = false,
   addItemToOrder,
+  removeItemFromOrder,
 }) => {
   const { register, handleSubmit } = useForm({
     mode: "onChange",
@@ -49,7 +51,12 @@ const Dish: React.FC<IDishProps> = ({
         itemOptions.push({ name: option.name });
       }
     });
-    if (addItemToOrder) {
+    if (
+      addItemToOrder &&
+      itemOptions.length >=
+        (options?.filter((option) => option.choices?.length ?? 0 > 0)?.length ??
+          999999)
+    ) {
       addItemToOrder({
         dishId: id,
         options: itemOptions,
@@ -77,12 +84,21 @@ const Dish: React.FC<IDishProps> = ({
       ]);
     }
   };
+  const onRemoveItemFromOrder = () => {
+    removeItemFromOrder!(id);
+    setQuantity((prev) => prev - 1);
+  };
   useEffect(() => {
     if (!orderStarted) {
       setSelections([]);
       setQuantity(0);
     }
   }, [orderStarted]);
+
+  const totalExtra = selections
+    ?.map((selection) => +selection.extra ?? 0)
+    .reduce((partialSum, a) => partialSum + a, 0);
+
   return (
     <div
       className={cn(
@@ -189,17 +205,22 @@ const Dish: React.FC<IDishProps> = ({
                 <div className="flex flex-col order-2">
                   <h4 className="text-end font-freesentation">
                     Total:{" "}
-                    <span className="font-semibold">
-                      $
-                      {price +
-                        selections
-                          ?.map((selection) => +selection.extra ?? 0)
-                          .reduce((partialSum, a) => partialSum + a, 0)}
-                    </span>
+                    <span className="font-semibold">${price + totalExtra}</span>
                   </h4>
-                  <button className="w-fit px-3 py-1.5 ml-auto font-freesentation bg-blue-500 text-white rounded-md mt-2">
-                    Add to Cart{quantity !== 0 && ` (${quantity})`}
-                  </button>
+                  <div className="ml-auto mt-2">
+                    {quantity !== 0 && (
+                      <button
+                        onClick={onRemoveItemFromOrder}
+                        type="button"
+                        className="w-fit px-3 py-1.5 font-freesentation bg-red-500 text-white rounded-md mr-2"
+                      >
+                        Remove from Cart
+                      </button>
+                    )}
+                    <button className="w-fit px-3 py-1.5 font-freesentation bg-blue-500 text-white rounded-md">
+                      Add to Cart{quantity !== 0 && ` (${quantity})`}
+                    </button>
+                  </div>
                 </div>
               </form>
             </>

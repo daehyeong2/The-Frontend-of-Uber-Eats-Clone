@@ -65,6 +65,13 @@ const RestaurantDetail = () => {
   const addItemToOrder = (dish: CreateOrderItemInput) => {
     setOrderItems((current) => [dish, ...current]);
   };
+  const onRemoveItemFromOrder = (dishId: number) => {
+    const index = orderItems.findIndex((order) => order.dishId === dishId);
+    setOrderItems((prev) => [
+      ...prev.slice(0, index),
+      ...prev.slice(index + 1),
+    ]);
+  };
   console.log(orderItems);
   return (
     <div>
@@ -122,6 +129,7 @@ const RestaurantDetail = () => {
               options={dish.options ?? []}
               isCustomer={true}
               addItemToOrder={addItemToOrder}
+              removeItemFromOrder={onRemoveItemFromOrder}
             />
           ))}
         </div>
