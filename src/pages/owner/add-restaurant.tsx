@@ -88,12 +88,13 @@ const AddRestaurant = () => {
       const actualFile = file[0];
       const formBody = new FormData();
       formBody.append("file", actualFile);
-      const { url: coverImg } = await (
+      const { url } = await (
         await fetch("http://localhost:4000/uploads", {
           method: "POST",
           body: formBody,
         })
       ).json();
+      const coverImg = encodeURI(url);
       setImageUrl(coverImg);
       createRestaurantMutation({
         variables: {

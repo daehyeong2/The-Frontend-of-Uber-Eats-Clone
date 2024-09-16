@@ -19,7 +19,6 @@ import {
   VictoryTheme,
   VictoryTooltip,
   VictoryVoronoiContainer,
-  VictoryZoomContainer,
 } from "victory";
 
 export const MY_RESTAURANT_QUERY = gql`
@@ -126,6 +125,7 @@ const MyRestaurant = () => {
                 {data?.myRestaurant.restaurant?.menu.map((dish) => (
                   <Dish
                     key={dish.id}
+                    id={dish.id}
                     name={dish.name}
                     description={dish.description}
                     price={dish.price}

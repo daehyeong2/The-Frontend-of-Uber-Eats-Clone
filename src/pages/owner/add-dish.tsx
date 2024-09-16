@@ -33,8 +33,9 @@ interface IForm {
 }
 
 const AddDish = () => {
+  const [uploading, setUploading] = useState(false);
   const { id: restaurantId } = useParams<IAddDishProps>();
-  const [createDishMutation, { data, loading }] = useMutation<
+  const [createDishMutation, { data }] = useMutation<
     createDish,
     createDishVariables
   >(CREATE_DISH_MUTATION, {
@@ -56,8 +57,8 @@ const AddDish = () => {
     mode: "onChange",
   });
   const history = useHistory();
-  const onSubmit = () => {
-    const { name, description, price, ...rest } = getValues();
+  const onSubmit = async () => {
+    const { name, description, price, photo, ...rest } = getValues();
     const optionObjects = optionsNumber.reverse().map((theId) => {
       const choiceObjects = choicesNumber
         .filter((choice) => choice.includes(theId + ""))
@@ -72,18 +73,30 @@ const AddDish = () => {
       };
     });
     try {
-      createDishMutation({
+      setUploading(true);
+      const actualFile = photo[0];
+      const formBody = new FormData();
+      formBody.append("file", actualFile);
+      const { url } = await (
+        await fetch("http://localhost:4000/uploads", {
+          method: "POST",
+          body: formBody,
+        })
+      ).json();
+      const photoUrl = encodeURI(url);
+      await createDishMutation({
         variables: {
           input: {
             name,
             description,
             price: +price,
-            photo: "",
+            photo: photoUrl,
             options: optionObjects,
             restaurantId: +restaurantId,
           },
         },
       });
+      setUploading(false);
       history.push(`/restaurants/${restaurantId}`);
     } catch (e) {
       console.log(e);
@@ -257,7 +270,7 @@ const AddDish = () => {
         <Button
           className="mt-2"
           canClick={isValid}
-          loading={loading}
+          loading={uploading}
           text="Add Dish"
         />
         {data?.createDish.error && (

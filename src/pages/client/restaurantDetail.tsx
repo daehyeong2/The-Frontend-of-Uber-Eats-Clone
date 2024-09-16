@@ -1,11 +1,12 @@
 import { gql, useQuery } from "@apollo/client";
 import { Link, useParams } from "react-router-dom";
-import { RESTAURANT_FRAGMENT } from "../../fragments";
+import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import {
   restaurant,
   restaurantVariables,
 } from "../../__generated__/restaurant";
 import { Helmet } from "react-helmet-async";
+import Dish from "../../components/dish";
 
 export const RESTAURANT_QUERY = gql`
   query restaurant($input: RestaurantInput!) {
@@ -16,11 +17,15 @@ export const RESTAURANT_QUERY = gql`
         category {
           slug
         }
+        menu {
+          ...DishParts
+        }
         ...RestaurantParts
       }
     }
   }
   ${RESTAURANT_FRAGMENT}
+  ${DISH_FRAGMENT}
 `;
 
 interface IRestaurantDetailParams {
@@ -46,7 +51,11 @@ const RestaurantDetail = () => {
       <div
         className="bg-gray-800 py-44 bg-center bg-cover"
         style={{
-          backgroundImage: `url(${data?.restaurant.restaurant?.coverImg})`,
+          backgroundImage: `url(${
+            data?.restaurant.restaurant?.coverImg
+              ? encodeURI(data?.restaurant.restaurant?.coverImg)
+              : ""
+          })`,
         }}
       >
         <div className="bg-white w-1/4 py-8 pl-24">
@@ -63,6 +72,24 @@ const RestaurantDetail = () => {
           <h4 className="text-sm font-freesentation mt-2">
             {data?.restaurant.restaurant?.address}
           </h4>
+        </div>
+      </div>
+      <div className="container px-7 mb-20">
+        <h4 className="text-2xl font-freesentation font-medium mt-7">Menu</h4>
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-x-4 gap-y-5 mt-4">
+          {data?.restaurant.restaurant?.menu.map((dish) => (
+            <Dish
+              restaurantId={+params.id}
+              key={dish.id}
+              id={dish.id}
+              name={dish.name}
+              description={dish.description}
+              price={dish.price}
+              photo={dish.photo ?? ""}
+              options={dish.options ?? []}
+              isCustomer={true}
+            />
+          ))}
         </div>
       </div>
     </div>
