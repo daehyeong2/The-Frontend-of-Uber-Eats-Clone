@@ -8,6 +8,7 @@ import {
   orderUpdatesVariables,
 } from "../__generated__/orderUpdates";
 import { useEffect } from "react";
+import useMe from "../hooks/useMe";
 
 const GET_ORDER_QUERY = gql`
   query getOrder($input: GetOrderInput!) {
@@ -37,6 +38,7 @@ interface IParams {
 
 const Order = () => {
   const params = useParams<IParams>();
+  const { data: userData } = useMe();
   const { data, subscribeToMore } = useQuery<getOrder, getOrderVariables>(
     GET_ORDER_QUERY,
     {
@@ -108,9 +110,25 @@ const Order = () => {
               </span>
             </li>
           </ul>
-          <h5 className="text-lime-600 text-xl text-center my-4 font-freesentation font-semibold">
-            Status: {data?.getOrder.order?.status}
-          </h5>
+          {userData?.me.role === "Client" && (
+            <h5 className="text-lime-600 text-xl text-center my-4 font-freesentation font-semibold">
+              Status: {data?.getOrder.order?.status}
+            </h5>
+          )}
+          {userData?.me.role === "Owner" && (
+            <>
+              {data?.getOrder.order?.status === "Pending" && (
+                <button className="text-lg flex justify-center mx-auto mt-3 font-freesentation bg-lime-600 text-white rounded-sm px-4 py-2 hover:opacity-95 w-full">
+                  Accept Order
+                </button>
+              )}
+              {data?.getOrder.order?.status === "Cooking" && (
+                <button className="text-lg flex justify-center mx-auto mt-3 font-freesentation bg-lime-600 text-white rounded-sm px-4 py-2 hover:opacity-95 w-full">
+                  Order Cooked
+                </button>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>

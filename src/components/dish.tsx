@@ -131,7 +131,7 @@ const Dish: React.FC<IDishProps> = ({
       />
       {isCustomer && orderStarted && (
         <div className="col-span-3 flex flex-col">
-          {options?.length !== 0 && (
+          {options?.length !== 0 ? (
             <>
               <h5 className="font-semibold font-freesentation mt-4 mb-2">
                 Dish Options:
@@ -230,6 +230,31 @@ const Dish: React.FC<IDishProps> = ({
                 </div>
               </form>
             </>
+          ) : (
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex justify-end mt-auto"
+            >
+              <div className="flex flex-col gap-2">
+                <h4 className="font-freesentation text-right">
+                  Total: <span className="font-semibold">${price}</span>
+                </h4>
+                <div className="flex">
+                  {quantity !== 0 && (
+                    <button
+                      onClick={onRemoveItemFromOrder}
+                      type="button"
+                      className="w-fit px-3 py-1.5 font-freesentation bg-red-500 text-white rounded-md mr-2"
+                    >
+                      Remove from Cart
+                    </button>
+                  )}
+                  <button className="w-fit px-3 py-1.5 font-freesentation bg-blue-500 text-white rounded-md">
+                    Add to Cart{quantity !== 0 && ` (${quantity})`}
+                  </button>
+                </div>
+              </div>
+            </form>
           )}
         </div>
       )}
