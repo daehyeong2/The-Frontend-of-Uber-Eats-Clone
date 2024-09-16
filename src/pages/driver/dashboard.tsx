@@ -8,6 +8,8 @@ interface ICoords {
 
 const Dashboard = () => {
   const [driverCoords, setDriverCoords] = useState<ICoords>({ lat: 0, lng: 0 });
+  const [map, setMap] = useState<any>();
+  const [maps, setMaps] = useState<any>();
   const onSuccess = ({
     coords: { latitude, longitude },
   }: GeolocationPosition) => {
@@ -22,13 +24,20 @@ const Dashboard = () => {
     });
   }, []);
   const onApiLoaded = ({ map, maps }: { map: any; maps: any }) => {
-    map.panTo(new maps.LatLng(driverCoords.lat, driverCoords.lng));
+    setMap(map);
+    setMaps(maps);
   };
+  useEffect(() => {
+    if (map && maps) {
+      console.log(driverCoords);
+      map.panTo(new maps.LatLng(driverCoords.lat, driverCoords.lng));
+    }
+  }, [driverCoords, map, maps]);
   return (
     <div>
       <div
-        style={{ width: window.innerWidth, height: "80vh" }}
-        className="overflow-hidden py-40"
+        style={{ width: window.innerWidth, height: "95vh" }}
+        className="overflow-hidden"
       >
         <GoogleMapReact
           yesIWantToUseGoogleMapApiInternals
@@ -36,7 +45,16 @@ const Dashboard = () => {
           defaultZoom={7}
           defaultCenter={{ lat: 37, lng: 125 }}
           bootstrapURLKeys={{ key: "" }}
-        ></GoogleMapReact>
+        >
+          <div
+            // @ts-ignore
+            lat={driverCoords.lat}
+            lng={driverCoords.lng}
+            className="text-lg"
+          >
+            🏍️
+          </div>
+        </GoogleMapReact>
       </div>
     </div>
   );
