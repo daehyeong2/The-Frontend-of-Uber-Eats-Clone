@@ -1,5 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
-import { Link, useParams } from "react-router-dom";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { Link, useHistory, useParams } from "react-router-dom";
 import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import {
   restaurant,
@@ -10,6 +10,10 @@ import Dish from "../../components/dish";
 import { useState } from "react";
 import { CreateOrderItemInput } from "../../__generated__/globalTypes";
 import { cn } from "../../utils/cn";
+import {
+  createOrder,
+  createOrderVariables,
+} from "../../__generated__/createOrder";
 
 export const RESTAURANT_QUERY = gql`
   query restaurant($input: RestaurantInput!) {
@@ -36,6 +40,7 @@ const CREATE_ORDER_MUTATION = gql`
     createOrder(input: $input) {
       ok
       error
+      orderId
     }
   }
 `;
@@ -53,12 +58,30 @@ const RestaurantDetail = () => {
       },
     },
   });
+  const history = useHistory();
+  const onCompleted = (data: createOrder) => {
+    const {
+      createOrder: { ok, orderId },
+    } = data;
+    if (ok) {
+      alert("Order created!");
+    } else {
+      alert("Error occurred");
+    }
+    history.push(`/orders/${orderId}`);
+  };
   const [orderStarted, setOrderStarted] = useState(false);
   const [orderItems, setOrderItems] = useState<CreateOrderItemInput[]>([]);
+  const [createOrderMutation, { loading }] = useMutation<
+    createOrder,
+    createOrderVariables
+  >(CREATE_ORDER_MUTATION, {
+    onCompleted,
+  });
   const triggerStartOrder = () => {
     setOrderStarted(true);
   };
-  const triggetStopOrder = () => {
+  const triggetCancelOrder = () => {
     setOrderStarted(false);
     setOrderItems([]);
   };
@@ -72,7 +95,20 @@ const RestaurantDetail = () => {
       ...prev.slice(index + 1),
     ]);
   };
-  console.log(orderItems);
+  const triggetConfirmOrder = () => {
+    if (loading) return;
+    if (orderItems.length === 0) {
+      return alert("음식을 장바구니에 담아주세요.");
+    }
+    createOrderMutation({
+      variables: {
+        input: {
+          restaurantId: +params.id,
+          items: orderItems,
+        },
+      },
+    });
+  };
   return (
     <div>
       <Helmet>
@@ -90,7 +126,7 @@ const RestaurantDetail = () => {
           })`,
         }}
       >
-        <div className="bg-white w-1/4 py-8 pl-24">
+        <div className="bg-white w-3/4 sm:w-1/3 xl:w-1/4 xl:pl-24 py-8 pl-12">
           <h2 className="text-4xl mb-2.5">
             {data?.restaurant.restaurant?.name}
           </h2>
@@ -109,12 +145,25 @@ const RestaurantDetail = () => {
       <div className="container px-7 mb-20">
         <div className="flex justify-between">
           <h4 className="text-3xl font-freesentation font-medium mt-7">Menu</h4>
-          <button
-            onClick={orderStarted ? triggetStopOrder : triggerStartOrder}
-            className={cn("btn rounded-xl", orderStarted && "bg-red-500")}
-          >
-            {orderStarted ? "Stop Order" : "Start Order"}
-          </button>
+          <div className="my-auto">
+            <button
+              onClick={orderStarted ? triggetCancelOrder : triggerStartOrder}
+              className={cn(
+                "btn rounded-xl",
+                orderStarted && "bg-gray-950 hover:opacity-100"
+              )}
+            >
+              {orderStarted ? "Cancel Order" : "Start Order"}
+            </button>
+            {orderStarted && (
+              <button
+                onClick={triggetConfirmOrder}
+                className="btn rounded-xl ml-3"
+              >
+                {loading ? "Loading.." : "Confirm Order"}
+              </button>
+            )}
+          </div>
         </div>
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-x-4 gap-y-5 mt-10">
           {data?.restaurant.restaurant?.menu.map((dish) => (

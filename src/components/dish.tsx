@@ -35,14 +35,14 @@ const Dish: React.FC<IDishProps> = ({
   addItemToOrder,
   removeItemFromOrder,
 }) => {
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, reset, getValues } = useForm({
     mode: "onChange",
   });
   const [selections, setSelections] = useState<ISelection[]>([]);
   const [quantity, setQuantity] = useState(0);
   const onSubmit = () => {
     const itemOptions: { name: string; choice?: string }[] = [];
-    selections.map((selection) => {
+    selections.forEach((selection) => {
       const option = options![+selection.id.split("-")[1]];
       if (option.choices && option.choices.length > 0) {
         const choice = option.choices[selection.index!]?.name;
@@ -51,12 +51,15 @@ const Dish: React.FC<IDishProps> = ({
         itemOptions.push({ name: option.name });
       }
     });
-    if (
-      addItemToOrder &&
-      itemOptions.length >=
-        (options?.filter((option) => option.choices?.length ?? 0 > 0)?.length ??
-          999999)
-    ) {
+    let isErrorOccurred = false;
+    Array.from(Array(options?.length).keys()).forEach((_, idx) => {
+      const value = getValues()[idx];
+      if (!isErrorOccurred && value === "0") {
+        isErrorOccurred = true;
+      }
+    });
+    if (isErrorOccurred) return alert(`옵션을 선택해 주세요.`);
+    if (addItemToOrder) {
       addItemToOrder({
         dishId: id,
         options: itemOptions,
@@ -66,10 +69,10 @@ const Dish: React.FC<IDishProps> = ({
   };
   const onChange = (data: React.ChangeEvent<HTMLInputElement>) => {
     const {
-      target: { value, alt, id },
+      target: { value, alt, id, checked },
     } = data;
     if (alt) {
-      if (selections.findIndex((selection) => selection.id === id) !== -1) {
+      if (!checked) {
         setSelections((prev) =>
           prev.filter((selection) => selection.id !== id)
         );
@@ -91,9 +94,10 @@ const Dish: React.FC<IDishProps> = ({
   useEffect(() => {
     if (!orderStarted) {
       setSelections([]);
+      reset();
       setQuantity(0);
     }
-  }, [orderStarted]);
+  }, [orderStarted, reset]);
 
   const totalExtra = selections
     ?.map((selection) => +selection.extra ?? 0)
@@ -121,7 +125,7 @@ const Dish: React.FC<IDishProps> = ({
         <span className="font-freesentation">${price}</span>
       </div>
       <img
-        className="object-cover object-center size-32 group-[:not(:hover)]:rounded-tr-2xl group-[:not(:hover)]:rounded-bl-2xl group-hover:rounded-tl-3xl group-hover:rounded-br-3xl transition-all duration-[400ms]"
+        className="object-cover object-center size-full group-[:not(:hover)]:rounded-tr-2xl group-[:not(:hover)]:rounded-bl-2xl group-hover:rounded-tl-3xl group-hover:rounded-br-3xl transition-all duration-[400ms]"
         src={photo}
         alt={name}
       />
@@ -136,72 +140,74 @@ const Dish: React.FC<IDishProps> = ({
                 onSubmit={handleSubmit(onSubmit)}
                 className="flex flex-col gap-2 ml-3 h-full justify-between"
               >
-                {options?.map((option, idx) => (
-                  <li
-                    key={idx}
-                    className={cn(
-                      "flex gap-1",
-                      (option?.choices?.length ?? 0) > 0
-                        ? "flex-col order-1"
-                        : "justify-between"
-                    )}
-                  >
-                    {(option?.choices?.length ?? 0) > 0 ? (
-                      <>
-                        <span className="mb-0.5 text-sm font-freesentation font-medium">
-                          {option.name}
-                          {option.extra !== 0 && ` (+$${option.extra})`}:
-                        </span>
-                        <select
-                          className="ml-3 text-sm border px-1.5 py-1 font-freesentation font-light"
-                          defaultValue={0}
-                          id={`${id}-${idx}`}
-                          required
-                          {...register(idx + "", {
-                            required: true,
-                            onChange,
-                          })}
-                        >
-                          <option disabled value={0}>
-                            Please Select an Option
-                          </option>
-                          {option.choices?.map((choice, idx) => (
-                            <option
-                              key={idx}
-                              value={
-                                typeof choice.extra === "number"
-                                  ? `${idx}-${choice.extra + option.extra!}`
-                                  : ""
-                              }
-                            >
-                              {choice.name} (
-                              {choice.extra === 0
-                                ? "Free"
-                                : `+$${choice.extra}`}
-                              )
+                <div className="flex flex-col gap-3">
+                  {options?.map((option, idx) => (
+                    <li
+                      key={idx}
+                      className={cn(
+                        "flex gap-1",
+                        (option?.choices?.length ?? 0) > 0
+                          ? "flex-col order-1"
+                          : "justify-between"
+                      )}
+                    >
+                      {(option?.choices?.length ?? 0) > 0 ? (
+                        <>
+                          <span className="mb-0.5 text-sm font-freesentation font-medium">
+                            {option.name}
+                            {option.extra !== 0 && ` (+$${option.extra})`}:
+                          </span>
+                          <select
+                            className="ml-3 text-sm border px-1.5 py-1 font-freesentation font-light"
+                            defaultValue={0}
+                            id={`${id}-${idx}`}
+                            required
+                            {...register(idx + "", {
+                              required: true,
+                              onChange,
+                            })}
+                          >
+                            <option disabled value={0}>
+                              Please Select an Option
                             </option>
-                          ))}
-                        </select>
-                      </>
-                    ) : (
-                      <>
-                        <label
-                          htmlFor={`${id}-${idx}`}
-                          className="font-freesentation text-sm w-full"
-                        >
-                          {option.name} (
-                          {option.extra === 0 ? "Free" : `+$${option.extra}`})
-                        </label>
-                        <input
-                          alt={option.extra + "" ?? ""}
-                          {...register(idx + "", { onChange })}
-                          id={`${id}-${idx}`}
-                          type="checkbox"
-                        />
-                      </>
-                    )}
-                  </li>
-                ))}
+                            {option.choices?.map((choice, idx) => (
+                              <option
+                                key={idx}
+                                value={
+                                  typeof choice.extra === "number"
+                                    ? `${idx}-${choice.extra + option.extra!}`
+                                    : ""
+                                }
+                              >
+                                {choice.name} (
+                                {choice.extra === 0
+                                  ? "Free"
+                                  : `+$${choice.extra}`}
+                                )
+                              </option>
+                            ))}
+                          </select>
+                        </>
+                      ) : (
+                        <>
+                          <label
+                            htmlFor={`${id}-${idx}`}
+                            className="font-freesentation text-sm w-full"
+                          >
+                            {option.name} (
+                            {option.extra === 0 ? "Free" : `+$${option.extra}`})
+                          </label>
+                          <input
+                            alt={option.extra + "" ?? ""}
+                            {...register(idx + "", { onChange })}
+                            id={`${id}-${idx}`}
+                            type="checkbox"
+                          />
+                        </>
+                      )}
+                    </li>
+                  ))}
+                </div>
                 <div className="flex flex-col order-2">
                   <h4 className="text-end font-freesentation">
                     Total:{" "}
