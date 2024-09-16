@@ -150,7 +150,7 @@ const RestaurantDetail = () => {
               onClick={orderStarted ? triggetCancelOrder : triggerStartOrder}
               className={cn(
                 "btn rounded-xl",
-                orderStarted && "bg-gray-950 hover:opacity-100"
+                orderStarted && "!bg-gray-950 hover:opacity-100"
               )}
             >
               {orderStarted ? "Cancel Order" : "Start Order"}
