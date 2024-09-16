@@ -14,6 +14,8 @@ interface IDishProps {
   options?: restaurant_restaurant_restaurant_menu_options[];
   orderStarted?: boolean;
   addItemToOrder?: (dishId: number) => void;
+  removeFromOrder?: (dishId: number) => void;
+  isSelected?: boolean;
 }
 
 interface ISelection {
@@ -33,6 +35,8 @@ const Dish: React.FC<IDishProps> = ({
   isCustomer = false,
   orderStarted = false,
   addItemToOrder,
+  removeFromOrder,
+  isSelected,
 }) => {
   const { register, handleSubmit } = useForm({
     mode: "onChange",
@@ -80,12 +84,22 @@ const Dish: React.FC<IDishProps> = ({
       ]);
     }
   };
+  const onClick = () => {
+    if (orderStarted) {
+      if (isSelected && removeFromOrder) {
+        removeFromOrder(id);
+      } else if (addItemToOrder) {
+        addItemToOrder!(id);
+      }
+    }
+  };
   return (
     <div
-      onClick={() => (orderStarted ? addItemToOrder!(id) : null)}
+      onClick={onClick}
       className={cn(
         "p-4 grid grid-cols-3 border cursor-pointer border-gray-300 hover:border-gray-500 transition-colors group",
-        isCustomer && "grid-rows-2"
+        isCustomer && "grid-rows-2",
+        isSelected && "border-gray-800 hover:border-gray-800"
       )}
     >
       <div

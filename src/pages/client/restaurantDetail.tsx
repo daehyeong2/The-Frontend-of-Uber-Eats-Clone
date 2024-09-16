@@ -57,8 +57,21 @@ const RestaurantDetail = () => {
   const triggerStartOrder = () => {
     setOrderStarted(true);
   };
+  const isSelected = (dishId: number) => {
+    return (
+      orderItems.findIndex((orderItem) => orderItem.dishId === dishId) !== -1
+    );
+  };
   const addItemToOrder = (dishId: number) => {
+    if (isSelected(dishId)) {
+      return;
+    }
     setOrderItems((current) => [{ dishId }, ...current]);
+  };
+  const removeFromOrder = (dishId: number) => {
+    setOrderItems((current) =>
+      current.filter((dish) => dish.dishId !== dishId)
+    );
   };
   console.log(orderItems);
   return (
@@ -98,12 +111,13 @@ const RestaurantDetail = () => {
         <div className="flex justify-between">
           <h4 className="text-3xl font-freesentation font-medium mt-7">Menu</h4>
           <button onClick={triggerStartOrder} className="btn rounded-xl">
-            Start Order
+            {orderStarted ? "Ordering.." : "Start Order"}
           </button>
         </div>
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-x-4 gap-y-5 mt-10">
           {data?.restaurant.restaurant?.menu.map((dish) => (
             <Dish
+              isSelected={isSelected(dish.id)}
               orderStarted={orderStarted}
               restaurantId={+params.id}
               key={dish.id}
@@ -115,6 +129,7 @@ const RestaurantDetail = () => {
               options={dish.options ?? []}
               isCustomer={true}
               addItemToOrder={addItemToOrder}
+              removeFromOrder={removeFromOrder}
             />
           ))}
         </div>
