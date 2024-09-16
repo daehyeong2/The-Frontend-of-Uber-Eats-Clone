@@ -16,6 +16,7 @@ import AddRestaurant from "../pages/owner/add-restaurant";
 import MyRestaurant from "../pages/owner/my-restaurant";
 import AddDish from "../pages/owner/add-dish";
 import Order from "../pages/order";
+import Dashboard from "../pages/driver/dashboard";
 
 interface IRoute {
   path: string;
@@ -65,6 +66,13 @@ const ownerRoutes: IRoute[] = [
   },
 ];
 
+const driverRoutes: IRoute[] = [
+  {
+    path: "/",
+    component: <Dashboard />,
+  },
+];
+
 const commonRoutes: IRoute[] = [
   {
     path: "/confirm",
@@ -111,6 +119,12 @@ export const LoggedInRouter = () => {
           ))}
         {data.me.role === UserRole.Owner &&
           ownerRoutes.map(({ path, component, exact = true }) => (
+            <Route key={path} path={path} exact={exact}>
+              {component}
+            </Route>
+          ))}
+        {data.me.role === UserRole.Delivery &&
+          driverRoutes.map(({ path, component, exact = true }) => (
             <Route key={path} path={path} exact={exact}>
               {component}
             </Route>
