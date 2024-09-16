@@ -86,7 +86,7 @@ const Dish: React.FC<IDishProps> = ({
   return (
     <div
       className={cn(
-        "p-4 grid grid-cols-3 border cursor-pointer border-gray-300 hover:border-gray-500 transition-colors group",
+        "p-4 grid grid-cols-3 border border-gray-300 hover:border-gray-400 transition-all group hover:shadow-md",
         isCustomer && orderStarted && "grid-rows-2"
       )}
     >
@@ -126,7 +126,7 @@ const Dish: React.FC<IDishProps> = ({
                     className={cn(
                       "flex gap-1",
                       (option?.choices?.length ?? 0) > 0
-                        ? "flex-col"
+                        ? "flex-col order-1"
                         : "justify-between"
                     )}
                   >
@@ -186,7 +186,7 @@ const Dish: React.FC<IDishProps> = ({
                     )}
                   </li>
                 ))}
-                <div className="flex flex-col">
+                <div className="flex flex-col order-2">
                   <h4 className="text-end font-freesentation">
                     Total:{" "}
                     <span className="font-semibold">
