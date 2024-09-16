@@ -1,10 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
 import { Link, useParams } from "react-router-dom";
-import {
-  DISH_FRAGMENT,
-  ORDER_FRAGMENT,
-  RESTAURANT_FRAGMENT,
-} from "../../fragments";
+import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import {
   myRestaurant,
   myRestaurantVariables,
@@ -34,7 +30,9 @@ export const MY_RESTAURANT_QUERY = gql`
           ...DishParts
         }
         orders {
-          ...OrderParts
+          id
+          total
+          createdAt
         }
         ...RestaurantParts
       }
@@ -42,7 +40,6 @@ export const MY_RESTAURANT_QUERY = gql`
   }
   ${RESTAURANT_FRAGMENT}
   ${DISH_FRAGMENT}
-  ${ORDER_FRAGMENT}
 `;
 
 interface IParams {

@@ -41,8 +41,8 @@ export interface myRestaurant_myRestaurant_restaurant_menu {
 export interface myRestaurant_myRestaurant_restaurant_orders {
   __typename: "Order";
   id: number;
-  createdAt: any;
   total: number | null;
+  createdAt: any;
 }
 
 export interface myRestaurant_myRestaurant_restaurant {
