@@ -7,6 +7,7 @@ import {
   orderUpdates,
   orderUpdatesVariables,
 } from "../__generated__/orderUpdates";
+import { useEffect } from "react";
 
 const GET_ORDER_QUERY = gql`
   query getOrder($input: GetOrderInput!) {
@@ -36,24 +37,44 @@ interface IParams {
 
 const Order = () => {
   const params = useParams<IParams>();
-  const { data } = useQuery<getOrder, getOrderVariables>(GET_ORDER_QUERY, {
-    variables: {
-      input: {
-        id: +params.id,
+  const { data, subscribeToMore } = useQuery<getOrder, getOrderVariables>(
+    GET_ORDER_QUERY,
+    {
+      variables: {
+        input: {
+          id: +params.id,
+        },
       },
-    },
-  });
-  const { data: subscriptionData } = useSubscription<
-    orderUpdates,
-    orderUpdatesVariables
-  >(ORDER_SUBSCRIPTION, {
-    variables: {
-      input: {
-        id: +params.id,
-      },
-    },
-  });
-  console.log(subscriptionData);
+    }
+  );
+  useEffect(() => {
+    if (data?.getOrder.ok) {
+      subscribeToMore({
+        document: ORDER_SUBSCRIPTION,
+        variables: {
+          input: {
+            id: +params.id,
+          },
+        },
+        updateQuery: (
+          prev,
+          {
+            subscriptionData: { data },
+          }: { subscriptionData: { data: orderUpdates } }
+        ) => {
+          if (!data) return prev;
+          return {
+            getOrder: {
+              ...prev.getOrder,
+              order: {
+                ...data.orderUpdates,
+              },
+            },
+          };
+        },
+      });
+    }
+  }, [data]);
   return (
     <div className="flex justify-center mt-32 px-3">
       <Helmet>
