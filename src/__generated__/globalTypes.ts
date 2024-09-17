@@ -114,6 +114,10 @@ export interface SearchRestaurantInput {
   query: string;
 }
 
+export interface TakeOrderInput {
+  id: number;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================

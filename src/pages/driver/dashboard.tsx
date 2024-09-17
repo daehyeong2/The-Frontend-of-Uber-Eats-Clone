@@ -1,9 +1,10 @@
-import { gql, useSubscription } from "@apollo/client";
+import { gql, useMutation, useSubscription } from "@apollo/client";
 import GoogleMapReact from "google-map-react";
 import React, { useEffect, useState } from "react";
 import { ORDER_FRAGMENT } from "../../fragments";
 import { cookedOrders } from "../../__generated__/cookedOrders";
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+import { takeOrder, takeOrderVariables } from "../../__generated__/takeOrder";
 
 const COOKED_ORDERS_SUBSCRIPTION = gql`
   subscription cookedOrders {
@@ -12,6 +13,14 @@ const COOKED_ORDERS_SUBSCRIPTION = gql`
     }
   }
   ${ORDER_FRAGMENT}
+`;
+const TAKE_ORDER_MUTATION = gql`
+  mutation takeOrder($input: TakeOrderInput!) {
+    takeOrder(input: $input) {
+      ok
+      error
+    }
+  }
 `;
 
 interface ICoords {
@@ -95,6 +104,27 @@ const Dashboard = () => {
       makeRoute();
     }
   }, [cookedOrdersData]);
+  const history = useHistory();
+  const onCompleted = (data: takeOrder) => {
+    if (data.takeOrder.ok) {
+      history.push(`/orders/${cookedOrdersData?.cookedOrders.id}`);
+    }
+  };
+  const [takeOrderMutation] = useMutation<takeOrder, takeOrderVariables>(
+    TAKE_ORDER_MUTATION,
+    {
+      onCompleted,
+    }
+  );
+  const triggerMutation = () => {
+    takeOrderMutation({
+      variables: {
+        input: {
+          id: cookedOrdersData?.cookedOrders.id ?? -1,
+        },
+      },
+    });
+  };
   return (
     <div>
       <div
@@ -106,6 +136,7 @@ const Dashboard = () => {
           onGoogleApiLoaded={onApiLoaded}
           defaultZoom={16}
           defaultCenter={{ lat: 37, lng: 125 }}
+          draggable={false}
           bootstrapURLKeys={{
             key: process.env.REACT_APP_GOOGLE_API_KEY as string,
           }}
@@ -122,12 +153,9 @@ const Dashboard = () => {
                 Pick it up soon! @
                 {cookedOrdersData?.cookedOrders.restaurant?.name}
               </h4>
-              <Link
-                to={`/orders/${cookedOrdersData?.cookedOrders.id}`}
-                className="btn w-full mt-7 block text-center"
-              >
+              <button onClick={triggerMutation} className="btn w-full mt-7">
                 Accept Challenge &rarr;
-              </Link>
+              </button>
             </>
           ) : (
             <h1 className="text-center text-3xl font-medium">
