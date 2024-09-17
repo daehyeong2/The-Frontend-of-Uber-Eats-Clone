@@ -125,7 +125,7 @@ const Order = () => {
               </span>
             </li>
             <li className="text-lg border-t border-gray-800 py-4 font-freesentation">
-              Prepared By:{" "}
+              Driver:{" "}
               <span className="font-semibold">
                 {data?.getOrder.order?.driver?.email ?? "Not yet."}
               </span>
